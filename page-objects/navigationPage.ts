@@ -12,7 +12,7 @@ export class NavigationPage extends BasePage {
   // Group menu categories
   private readonly menuGroups = {
     'Forms': ['Form Layouts', 'Datepicker'],
-    'Modal & Overlays': ['Toastr', 'Tooltip'],
+    'Modal & Overlays': ['Toastr', 'Tooltip', 'Dialog'],
     'Tables & Data': ['Smart Table'],
     'Home': ['/']
   };
@@ -26,6 +26,10 @@ export class NavigationPage extends BasePage {
     this.toastrMenuItem = this.page.locator('text=Toastr');
     this.smartTableMenuItem = this.page.locator('text=Smart Table');
     this.tooltipMenuItem = this.page.locator('text=Tooltip');
+  }
+
+  async dialogPage(): Promise<void> {
+    await this.navigateToMenuItem('Dialog');
   }
 
   /**
@@ -60,7 +64,7 @@ export class NavigationPage extends BasePage {
     await this.navigateToMenuItem('Toastr');
   }
 
-  async datepickerPage(): Promise<void> {
+  async datePickerPage(): Promise<void> {
     await this.navigateToMenuItem('Datepicker');
   }
   
