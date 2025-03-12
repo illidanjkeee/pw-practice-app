@@ -1,6 +1,5 @@
 import { Locator, Page } from '@playwright/test';
 import { BasePage } from './basePage';
-import { ROUTES } from '../config/urls';
 
 export class NavigationPage extends BasePage {
   // Menu items
@@ -85,6 +84,9 @@ export class NavigationPage extends BasePage {
     
     if (!groupMenuItem) {
       groupMenuItem = this.page.getByTitle(groupItemTitle);
+      if (!groupMenuItem) {
+        throw new Error(`Group menu item with title "${groupItemTitle}" not found`);
+      }
       this.groupMenuItemCache.set(groupItemTitle, groupMenuItem);
     }
     
