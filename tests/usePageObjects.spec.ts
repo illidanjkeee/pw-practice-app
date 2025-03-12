@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { NavigationPage } from '../page-objects/navigationPage';
+import { FormLayoutsPage } from '../page-objects/formLayoutsPage';
 
 let navigationPage: NavigationPage;
 
@@ -8,25 +9,6 @@ test.beforeEach(async ({ page }) => {
   await navigationPage.navigateToHome();
 });
 
-test('Navigate to form layouts page', async () => {
-  await navigationPage.formLayoutsPage();
-  await expect(navigationPage.page).toHaveURL("http://localhost:4200/pages/forms/layouts");
-});
-
-test('Navigate to datepicker page', async () => {
-  await navigationPage.datePickerPage();
-  await expect(navigationPage.page).toHaveURL("http://localhost:4200/pages/forms/datepicker");
-});
-
-test('Navigate to smart table page', async () => {
-  await navigationPage.smartTablePage();
-  await expect(navigationPage.page).toHaveURL("http://localhost:4200/pages/tables/smart-table");
-});
-
-test('Navigate to tooltip page', async () => {
-  await navigationPage.tooltipPage();
-  await expect(navigationPage.page).toHaveURL("http://localhost:4200/pages/modal-overlays/tooltip");
-});
 
 // Parametrized test
 const pages = [
@@ -43,3 +25,23 @@ for (const page of pages) {
     await expect(navigationPage.page).toHaveURL(page.url);
   });
 }
+
+// Parametrized test #2
+test('parametrised methods', async ({ page }) => {
+  const navigateTo = new NavigationPage(page);
+  const onFormLayoutsPage = new FormLayoutsPage(page);
+
+  await navigateTo.formLayoutsPage();
+  // Using the actual radio button label text from the form
+  await onFormLayoutsPage.submitUsingTheGridFormWithCredentialsAndSelectOption(
+    'test@email.com',
+    'test1',
+    'Option 2'
+  );
+  await onFormLayoutsPage.submitInlineFormWithNameEmailAndCheckbox(
+    'John Smith',
+    'johnsmith@email.com',
+    true
+  );
+});
+
