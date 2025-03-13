@@ -15,7 +15,7 @@ The original application is from [akveo.com](https://akveo.com) - [ngx-admin rep
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/pw-practice-app.git
+git clone https://github.com/illidanjkeee/pw-practice-app.git
 cd pw-practice-app
 ```
 
