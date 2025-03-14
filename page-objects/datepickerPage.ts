@@ -4,16 +4,22 @@ import { BasePage } from './basePage';
 export class DatepickerPage extends BasePage {
     // Locators
     private readonly calendarInput: Locator;
+    private readonly calendarInputWithRange: Locator;
     private readonly calendarViewMode: Locator;
     private readonly nextMonthButton: Locator;
+    private readonly prevMonthButton: Locator;
     private readonly dayCell: Locator;
+    private readonly activeDayCell: Locator;
 
     constructor(page: Page) {
         super(page);
         this.calendarInput = this.page.getByPlaceholder('Form Picker');
+        this.calendarInputWithRange = this.page.locator('input[placeholder="Range Picker"]');
         this.calendarViewMode = this.page.locator('nb-calendar-view-mode');
         this.nextMonthButton = this.page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]');
+        this.prevMonthButton = this.page.locator('nb-calendar-pageable-navigation [data-name="chevron-left"]');
         this.dayCell = this.page.locator('[class="day-cell ng-star-inserted"]');
+        this.activeDayCell = this.page.locator('.day-cell.ng-star-inserted:not(.bounding-month)');
     }
 
     /**
@@ -22,11 +28,30 @@ export class DatepickerPage extends BasePage {
      */
     async selectCommonDatepickerDateFromToday(numberOfDaysFromToday: number): Promise<void> {
         await this.calendarInput.click();
-
         const targetDate = this.calculateTargetDate(numberOfDaysFromToday);
         await this.navigateToTargetMonth(targetDate);
         await this.selectDay(targetDate);
-        await this.verifySelectedDate(targetDate);
+        await this.verifySelectedDate(targetDate, this.calendarInput);
+    }
+
+    /**
+     * Selects a date range in the datepicker
+     * @param startDayFromToday Number of days from today for the start date
+     * @param endDayFromToday Number of days from today for the end date
+     */
+    async selectDatepickerWithRangeFromToday(startDayFromToday: number, endDayFromToday: number): Promise<void> {
+        await this.calendarInputWithRange.click();
+        
+        const startDate = this.calculateTargetDate(startDayFromToday);
+        const endDate = this.calculateTargetDate(endDayFromToday);
+        
+        await this.selectDayRange(startDate, endDate);
+        
+        const startDateString = this.formatDateForAssertion(startDate);
+        const endDateString = this.formatDateForAssertion(endDate);
+        const dateToAssert = `${startDateString} - ${endDateString}`;
+        
+        await expect(this.calendarInputWithRange).toHaveValue(dateToAssert, { timeout: 10000 });
     }
 
     /**
@@ -55,9 +80,19 @@ export class DatepickerPage extends BasePage {
         const expectedMonth = targetDate.toLocaleString('default', { month: 'long' });
         const expectedYear = targetDate.getFullYear();
         const expectedMonthYear = `${expectedMonth} ${expectedYear}`;
-
-        while (!(await this.calendarViewMode.textContent()).includes(expectedMonthYear)) {
-            await this.nextMonthButton.click();
+        let calendarMonthAndYear = await this.calendarViewMode.textContent() || '';
+        
+        // Determine direction to navigate
+        if (targetDate > new Date()) {
+            while (!calendarMonthAndYear.includes(expectedMonthYear)) {
+                await this.nextMonthButton.click();
+                calendarMonthAndYear = await this.calendarViewMode.textContent() || '';
+            }
+        } else {
+            while (!calendarMonthAndYear.includes(expectedMonthYear)) {
+                await this.prevMonthButton.click();
+                calendarMonthAndYear = await this.calendarViewMode.textContent() || '';
+            }
         }
     }
 
@@ -66,14 +101,38 @@ export class DatepickerPage extends BasePage {
      */
     private async selectDay(date: Date): Promise<void> {
         const dayString = date.getDate().toString();
-        await this.dayCell.getByText(dayString, { exact: true }).click();
+        await this.activeDayCell.getByText(dayString, { exact: true }).click();
+    }
+
+    /**
+     * Selects the target date range in calendar
+     */
+    private async selectDayRange(startDate: Date, endDate: Date): Promise<void> {
+        // Navigate to start date's month
+        await this.navigateToTargetMonth(startDate);
+        
+        // Select start date
+        const startDayString = startDate.getDate().toString();
+        await this.activeDayCell.getByText(startDayString, { exact: true }).click();
+        
+        // Navigate to end date's month if different
+        await this.navigateToTargetMonth(endDate);
+        
+        // Select end date
+        const endDayString = endDate.getDate().toString();
+        await this.activeDayCell.getByText(endDayString, { exact: true }).click();
     }
 
     /**
      * Verifies the selected date in input field
      */
-    private async verifySelectedDate(date: Date): Promise<void> {
+    private async verifySelectedDate(date: Date, inputField: Locator): Promise<void> {
         const expectedDateString = this.formatDateForAssertion(date);
-        await expect(this.calendarInput).toHaveValue(expectedDateString);
+        
+        // Wait for the input to have a non-empty value
+        await expect(inputField).not.toHaveValue('', { timeout: 10000 });
+        
+        // Verify the exact value
+        await expect(inputField).toHaveValue(expectedDateString, { timeout: 10000 });
     }
 }

@@ -109,5 +109,11 @@ test.describe('Navigation and Form Tests', () => {
             await navigationPage.datePickerPage();
             await datepickerPage.selectCommonDatepickerDateFromToday(5);
         });
+
+        test('should select date range from datepicker', async () => {
+            await navigationPage.datePickerPage();
+            await datepickerPage.selectDatepickerWithRangeFromToday(2, 5);
+        });
+
     });
 });
