@@ -1,5 +1,5 @@
-import { Page } from '@playwright/test';
-import { BASE_URL } from '../config/urls';
+import { Page } from "@playwright/test";
+import { BASE_URL } from "../config/urls";
 
 export class BasePage {
   readonly page: Page;
@@ -15,13 +15,11 @@ export class BasePage {
   async navigateTo(path: string) {
     await this.page.goto(`${BASE_URL}${path}`);
   }
-  
+
   /**
    * Navigate to the home page
    */
   async navigateToHome() {
-    await this.navigateTo('/');
+    await this.navigateTo("/");
   }
-  
-
 }
