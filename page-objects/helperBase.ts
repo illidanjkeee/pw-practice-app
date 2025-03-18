@@ -1,5 +1,10 @@
 import { Page } from "@playwright/test";
 
+/**
+ * Base helper class for page objects, providing common utility methods.
+ *
+ * Contains methods for waiting on element states in the page.
+ */
 export class HelperBase {
   readonly page: Page;
 

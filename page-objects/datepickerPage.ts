@@ -1,6 +1,26 @@
 import { expect, Page, Locator } from "@playwright/test";
 import { BasePage } from "./basePage";
 
+/**
+ * Represents a page object for handling date picker interactions.
+ * Extends the BasePage class to provide specialized date picker functionality.
+ *
+ * @class DatepickerPage
+ * @extends BasePage
+ *
+ * @property {Locator} calendarInput - Locator for the common date picker input field
+ * @property {Locator} calendarInputWithRange - Locator for the date range picker input field
+ * @property {Locator} calendarViewMode - Locator for the calendar view mode element
+ * @property {Locator} nextMonthButton - Locator for the next month navigation button
+ * @property {Locator} prevMonthButton - Locator for the previous month navigation button
+ * @property {Locator} dayCell - Locator for day cells in the calendar
+ * @property {Locator} activeDayCell - Locator for active (selectable) day cells in the current month
+ *
+ * @example
+ * const datepicker = new DatepickerPage(page);
+ * await datepicker.selectCommonDatepickerDateFromToday(5); // Selects date 5 days from today
+ * await datepicker.selectDatepickerWithRangeFromToday(1, 7); // Selects date range from tomorrow to 7 days ahead
+ */
 export class DatepickerPage extends BasePage {
   // Locators
   private readonly calendarInput: Locator;

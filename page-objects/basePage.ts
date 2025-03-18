@@ -1,6 +1,9 @@
 import { Page } from "@playwright/test";
 import { BASE_URL } from "../config/urls";
 
+/**
+ * Represents a base page object class that provides common functionality for page interactions
+ */
 export class BasePage {
   readonly page: Page;
 

@@ -1,6 +1,14 @@
 import { Page, Locator } from "@playwright/test";
 import { BasePage } from "./basePage";
 
+/**
+ * Represents a page object for Modal Overlays page.
+ * This class provides methods and properties to interact with dialog components
+ * including opening various types of dialogs, submitting forms, handling inputs,
+ * and verifying dialog visibility and content.
+ *
+ * @extends BasePage
+ */
 export class ModalOverlaysPage extends BasePage {
   // Dialog buttons
   readonly openDialogWithComponentButton: Locator;
