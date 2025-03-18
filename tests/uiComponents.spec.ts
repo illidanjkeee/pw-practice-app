@@ -1,9 +1,10 @@
 import { test, expect, Page } from "@playwright/test";
+import { env } from "../utils/environment";
 
 test.describe("UI Component Tests", () => {
   // Common setup for all tests
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:4200/");
+    await page.goto(env.baseUrl);
   });
 
   test.describe("Form Layouts Page", () => {
@@ -22,16 +23,16 @@ test.describe("UI Component Tests", () => {
       );
 
       // Test different input methods
-      await usingTheGridEmailInput.fill("test@test.com");
+      await usingTheGridEmailInput.fill(env.testUser.email);
       await usingTheGridEmailInput.clear();
-      await usingTheGridEmailInput.pressSequentially("test2@test.com", {
+      await usingTheGridEmailInput.pressSequentially(env.testUser.email, {
         delay: 100,
       });
 
       // Verify input value using two different methods
       const inputValue = await usingTheGridEmailInput.inputValue();
-      expect(inputValue).toBe("test2@test.com");
-      await expect(usingTheGridEmailInput).toHaveValue("test2@test.com");
+      expect(inputValue).toBe(env.testUser.email);
+      await expect(usingTheGridEmailInput).toHaveValue(env.testUser.email);
     });
 
     test("Radio Buttons", async ({ page }) => {
@@ -128,10 +129,10 @@ test.describe("UI Component Tests", () => {
       // Click delete and verify row is removed
       const targetRow = page
         .getByRole("table")
-        .locator("tr", { hasText: "mdo@gmail.com" });
+        .locator("tr", { hasText: env.testEmails.deleteTarget });
       await targetRow.locator(".nb-trash").click();
       await expect(page.locator("table tr").first()).not.toHaveText(
-        "mdo@gmail.com",
+        env.testEmails.deleteTarget,
       );
     });
   });
@@ -145,7 +146,7 @@ test.describe("UI Component Tests", () => {
       // Edit age in first page
       const firstPageRow = page
         .locator("table")
-        .locator("tr", { hasText: "twitter@outlook.com" })
+        .locator("tr", { hasText: env.testEmails.editTarget })
         .first();
       await editTableCell(page, firstPageRow, "Age", "35");
 
@@ -156,16 +157,16 @@ test.describe("UI Component Tests", () => {
       const secondPageRow = page
         .getByRole("row", { name: "11" })
         .filter({ has: page.locator("td").nth(1).getByText("11") });
-      await editTableCell(page, secondPageRow, "E-mail", "test@test.com");
+      await editTableCell(page, secondPageRow, "E-mail", env.testUser.email);
 
       // Verify edit was successful
       await expect(secondPageRow.locator("td").nth(5)).toHaveText(
-        "test@test.com",
+        env.testUser.email,
       );
     });
 
     test("Table filtering by age", async ({ page }) => {
-      const ages = ["20", "30", "40", "200"];
+      const ages = env.testAgeFilters;
 
       for (const age of ages) {
         // Apply filter
@@ -203,9 +204,6 @@ async function navigateToPage(
   await page.getByRole("link", { name: subMenuItem }).click();
 }
 
-/**
- * Get an element from a specific form
- */
 /**
  * Get an element from a specific form
  */

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { PageManager } from "../page-objects/pageManager";
+import { env } from "../utils/environment";
 
 // Test data interfaces
 interface NavigationTestData {
@@ -21,34 +22,34 @@ const navigationPages: NavigationTestData[] = [
   {
     name: "Form Layouts",
     method: "formLayoutsPage",
-    url: "http://localhost:4200/pages/forms/layouts",
+    url: `${env.baseUrl}/pages/forms/layouts`,
   },
   {
     name: "Datepicker",
     method: "datePickerPage",
-    url: "http://localhost:4200/pages/forms/datepicker",
+    url: `${env.baseUrl}/pages/forms/datepicker`,
   },
   {
     name: "Smart Table",
     method: "smartTablePage",
-    url: "http://localhost:4200/pages/tables/smart-table",
+    url: `${env.baseUrl}/pages/tables/smart-table`,
   },
   {
     name: "Tooltip",
     method: "tooltipPage",
-    url: "http://localhost:4200/pages/modal-overlays/tooltip",
+    url: `${env.baseUrl}/pages/modal-overlays/tooltip`,
   },
   {
     name: "Dialog",
     method: "dialogPage",
-    url: "http://localhost:4200/pages/modal-overlays/dialog",
+    url: `${env.baseUrl}/pages/modal-overlays/dialog`,
   },
 ];
 
 const testForms: FormData[] = [
   {
-    email: "test@email.com",
-    password: "test1",
+    email: env.testUser.email, // Using email from .env
+    password: env.testUser.password, // Using password from .env
     option: "Option 2",
   },
   {
