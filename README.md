@@ -11,6 +11,12 @@ The original application is from [akveo.com](https://akveo.com) - [ngx-admin rep
 - npm 7 or higher
 - Visual Studio Code (recommended)
 
+## Environment Setup
+
+1. Copy `.env.example` to `.env`:
+```bash
+cp .env.example .env
+
 ## Setup Instructions
 
 1. Clone the repository:
@@ -23,6 +29,7 @@ cd pw-practice-app
 ```bash
 npm install --force
 ```
+
 
 3. Start the application:
 ```bash
