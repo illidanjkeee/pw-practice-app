@@ -12,6 +12,8 @@ export class ModalOverlaysPage extends BasePage {
   readonly openDialogWithBackdropClickButton: Locator;
   readonly openWithoutBackdropClickButton: Locator;
   readonly enterNameButton: Locator;
+  readonly submitButton: Locator;
+  readonly cancelButton: Locator;
 
   // Dialog elements
   readonly dialogCard: Locator;
@@ -53,9 +55,9 @@ export class ModalOverlaysPage extends BasePage {
     this.enterNameButton = this.page.locator("button:has-text('Enter Name')");
 
     // Dialog elements
-    this.dialogCard = this.page.locator("nb-card", {
-      hasText: "Template Dialog",
-    });
+    this.dialogCard = this.page.locator(
+      "nb-card:has(button:has-text('Close Dialog')), nb-card:has(button:has-text('Dismiss Dialog')), nb-card:has(button:has-text('Cancel')), nb-card:has(button:has-text('Submit'))",
+    );
     this.dialogHeader = this.page.locator("nb-card-header", {
       hasText: "Template Dialog",
     });
@@ -63,9 +65,13 @@ export class ModalOverlaysPage extends BasePage {
     this.dialogCloseButton = this.page.locator(
       "button:has-text('Close Dialog')",
     );
-    this.nameInput = this.page.locator("input[name='name']");
+    this.nameInput = this.page.locator(
+      "input[placeholder='Name'].nb-transition",
+    );
     this.namesList = this.page.locator(".result-from-dialog ul");
     this.namesItems = this.page.locator(".result-from-dialog ul li");
+    this.submitButton = this.page.locator("button:has-text('Submit')");
+    this.cancelButton = this.page.locator("button:has-text('Cancel')");
   }
 
   // Dialog interaction methods
@@ -107,6 +113,13 @@ export class ModalOverlaysPage extends BasePage {
 
   async closeDialog(): Promise<void> {
     await this.dialogCloseButton.click();
+  }
+
+  async submitDialog(): Promise<void> {
+    await this.submitButton.click();
+  }
+  async cancelDialog(): Promise<void> {
+    await this.cancelButton.click();
   }
 
   async enterName(name: string): Promise<void> {
@@ -153,5 +166,21 @@ export class ModalOverlaysPage extends BasePage {
 
   async getNamesCount(): Promise<number> {
     return await this.namesItems.count();
+  }
+
+  /**
+   * Enters a name in the dialog and submits it
+   * @param name The name to enter and submit
+   */
+  async enterNameAndSubmit(name: string): Promise<void> {
+    // Find the input field and enter the name
+    await this.nameInput.fill(name);
+    // Click the submit button
+    await this.submitButton.click();
+  }
+
+  async enterNameAndCancel(name: string): Promise<void> {
+    await this.page.fill('input[placeholder="Name"]', name);
+    await this.page.click('button:has-text("Cancel")');
   }
 }

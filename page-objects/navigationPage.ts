@@ -8,6 +8,7 @@ export class NavigationPage extends BasePage {
   readonly toastrMenuItem: Locator;
   readonly smartTableMenuItem: Locator;
   readonly tooltipMenuItem: Locator;
+  readonly dialogMenuItem: Locator;
 
   // Group menu categories
   private readonly menuGroups = {
@@ -26,6 +27,7 @@ export class NavigationPage extends BasePage {
     this.toastrMenuItem = this.page.locator("text=Toastr");
     this.smartTableMenuItem = this.page.locator("text=Smart Table");
     this.tooltipMenuItem = this.page.locator("text=Tooltip");
+    this.dialogMenuItem = this.page.locator("text=Dialog");
   }
 
   /**
