@@ -11,12 +11,6 @@ The original application is from [akveo.com](https://akveo.com) - [ngx-admin rep
 - npm 7 or higher
 - Visual Studio Code (recommended)
 
-## Environment Setup
-
-1. Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-
 ## Setup Instructions
 
 1. Clone the repository:
@@ -25,13 +19,17 @@ git clone https://github.com/illidanjkeee/pw-practice-app.git
 cd pw-practice-app
 ```
 
-2. Install dependencies:
+2. Copy `.env.example` to `.env`:
+```bash
+cp .env.example .env
+```
+
+3. Install dependencies:
 ```bash
 npm install --force
 ```
 
-
-3. Start the application:
+4. Start the application:
 ```bash
 npm start
 ```
@@ -54,30 +52,24 @@ npx playwright install
 
 ### Running Tests
 
-- Run all tests:
 ```bash
+# Run all tests
 npx playwright test
-```
 
-- Run tests in headed mode:
-```bash
+# Run tests in headed mode
 npx playwright test --headed
-```
 
-- Run specific test file:
-```bash
+# Run specific test file
 npx playwright test usePageObjects.spec.ts
-```
 
-- Run tests with debug mode:
-```bash
+# Run tests with debug mode
 npx playwright test --debug
 ```
 
 ### Test Reports
 
-- View test report:
 ```bash
+# View test report
 npx playwright show-report
 ```
 
@@ -94,31 +86,19 @@ pw-practice-app/
 
 ## Key Features for Testing
 
-- Forms and validation
-  - Grid and inline forms
-  - Form validation rules
-- Tables and data presentation
-  - Smart Table with sorting and filtering
-  - Dynamic data loading
-- Authentication flows
-  - Login/Logout functionality
-  - Protected routes
-- Navigation and routing
-  - Menu navigation
-  - Route parameters
-- Dynamic content loading
-  - Lazy-loaded modules
-  - Asynchronous data
+- Forms and validation (grid/inline forms, validation rules)
+- Tables and data presentation (Smart Table with sorting and filtering)
+- Authentication flows (login/logout, protected routes)
+- Navigation and routing (menu navigation, route parameters)
+- Dynamic content loading (lazy-loaded modules, asynchronous data)
 
 ## Docker Support
 
-1. Build the container:
 ```bash
+# Build the container
 docker-compose up --build
-```
 
-2. Run tests in container:
-```bash
+# Run tests in container
 docker-compose run test
 ```
 
@@ -133,4 +113,3 @@ docker-compose run test
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
