@@ -28,10 +28,6 @@ export class NavigationPage extends BasePage {
     this.tooltipMenuItem = this.page.locator("text=Tooltip");
   }
 
-  async dialogPage(): Promise<void> {
-    await this.navigateToMenuItem("Dialog");
-  }
-
   /**
    * Navigate to a specific page by menu item text
    * @param menuItemText The text of the menu item to click
@@ -76,6 +72,10 @@ export class NavigationPage extends BasePage {
     await this.navigateToMenuItem("Tooltip");
   }
 
+  async dialogPage(): Promise<void> {
+    await this.navigateToMenuItem("Dialog");
+  }
+
   /**
    * Selects a group menu item by its title. If the menu item is collapsed, it will be expanded.
    *
@@ -96,9 +96,22 @@ export class NavigationPage extends BasePage {
       this.groupMenuItemCache.set(groupItemTitle, groupMenuItem);
     }
 
+    // Ensure the group menu item is visible and interactable
+    await groupMenuItem.waitFor({ state: "visible" });
+
     const expandedState = await groupMenuItem.getAttribute("aria-expanded");
-    if (expandedState === "false") {
+    if (expandedState === "false" || expandedState === null) {
       await groupMenuItem.click();
+
+      // Wait for the menu to expand
+      await this.page.waitForTimeout(500); // Small delay to ensure the menu expands
+      const newExpandedState =
+        await groupMenuItem.getAttribute("aria-expanded");
+      if (newExpandedState !== "true") {
+        throw new Error(
+          `Failed to expand group menu item with title "${groupItemTitle}".`,
+        );
+      }
     }
   }
 }

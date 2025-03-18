@@ -3,24 +3,24 @@ import { BasePage } from "./basePage";
 
 export class ModalOverlaysPage extends BasePage {
   // Dialog buttons
-  private readonly openDialogWithComponentButton: Locator;
-  private readonly openDialogWithTemplateButton: Locator;
-  private readonly openDialogWithBackdropButton: Locator;
-  private readonly openDialogWithoutBackdropButton: Locator;
-  private readonly openDialogWithEscCloseButton: Locator;
-  private readonly openDialogWithoutEscCloseButton: Locator;
-  private readonly openDialogWithBackdropClickButton: Locator;
-  private readonly openWithoutBackdropClickButton: Locator;
-  private readonly enterNameButton: Locator;
+  readonly openDialogWithComponentButton: Locator;
+  readonly openDialogWithTemplateButton: Locator;
+  readonly openDialogWithBackdropButton: Locator;
+  readonly openDialogWithoutBackdropButton: Locator;
+  readonly openDialogWithEscCloseButton: Locator;
+  readonly openDialogWithoutEscCloseButton: Locator;
+  readonly openDialogWithBackdropClickButton: Locator;
+  readonly openWithoutBackdropClickButton: Locator;
+  readonly enterNameButton: Locator;
 
   // Dialog elements
-  private readonly dialogCard: Locator;
-  private readonly dialogHeader: Locator;
-  private readonly dialogBody: Locator;
-  private readonly dialogCloseButton: Locator;
-  private readonly nameInput: Locator;
-  private readonly namesList: Locator;
-  private readonly namesItems: Locator;
+  readonly dialogCard: Locator;
+  readonly dialogHeader: Locator;
+  readonly dialogBody: Locator;
+  readonly dialogCloseButton: Locator;
+  readonly nameInput: Locator;
+  readonly namesList: Locator;
+  readonly namesItems: Locator;
 
   constructor(page: Page) {
     super(page);
