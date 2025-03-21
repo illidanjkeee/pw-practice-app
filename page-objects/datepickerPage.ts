@@ -28,7 +28,6 @@ export class DatepickerPage extends BasePage {
   private readonly calendarViewMode: Locator;
   private readonly nextMonthButton: Locator;
   private readonly prevMonthButton: Locator;
-  private readonly dayCell: Locator;
   private readonly activeDayCell: Locator;
 
   constructor(page: Page) {
@@ -44,7 +43,6 @@ export class DatepickerPage extends BasePage {
     this.prevMonthButton = this.page.locator(
       'nb-calendar-pageable-navigation [data-name="chevron-left"]',
     );
-    this.dayCell = this.page.locator('[class="day-cell ng-star-inserted"]');
     this.activeDayCell = this.page.locator(
       ".day-cell.ng-star-inserted:not(.bounding-month)",
     );
