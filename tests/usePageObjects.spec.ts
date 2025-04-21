@@ -61,14 +61,21 @@ const testForms: FormData[] = [
 
 test.describe("Navigation and Form Tests", () => {
   test.beforeEach(async ({ pageManager }) => {
-    await pageManager.navigateTo().navigateToHome();
+    await test.step("Navigate to home page", async () => {
+      await pageManager.navigateTo().navigateToHome();
+    });
   });
 
   test.describe("Navigation Tests", () => {
     for (const page of navigationPages) {
       test(`should navigate to ${page.name} page`, async ({ pageManager }) => {
-        await pageManager.navigateTo()[page.method]();
-        await expect(pageManager.navigateTo().page).toHaveURL(page.url);
+        await test.step(`Navigate to ${page.name} page`, async () => {
+          await pageManager.navigateTo()[page.method]();
+        });
+
+        await test.step(`Verify URL is correct for ${page.name}`, async () => {
+          await expect(pageManager.navigateTo().page).toHaveURL(page.url);
+        });
       });
     }
   });
@@ -77,47 +84,65 @@ test.describe("Navigation and Form Tests", () => {
     test("should submit grid form with credentials", async ({
       pageManager,
     }) => {
-      await pageManager.navigateTo().formLayoutsPage();
+      await test.step("Navigate to Form Layouts page", async () => {
+        await pageManager.navigateTo().formLayoutsPage();
+      });
 
-      await pageManager
-        .onFormLayoutsPage()
-        .submitUsingTheGridFormWithCredentialsAndSelectOption({
-          email: testForms[0].email,
-          password: testForms[0].password,
-          option: testForms[0].option,
-        });
+      await test.step("Submit grid form with credentials and select option", async () => {
+        await pageManager
+          .onFormLayoutsPage()
+          .submitUsingTheGridFormWithCredentialsAndSelectOption({
+            email: testForms[0].email,
+            password: testForms[0].password,
+            option: testForms[0].option,
+          });
+      });
     });
 
     test("should submit inline form with user details", async ({
       pageManager,
     }) => {
-      await pageManager.navigateTo().formLayoutsPage();
+      await test.step("Navigate to Form Layouts page", async () => {
+        await pageManager.navigateTo().formLayoutsPage();
+      });
 
-      await pageManager
-        .onFormLayoutsPage()
-        .submitInlineFormWithNameEmailAndCheckbox({
-          name: testForms[1].name,
-          email: testForms[1].email,
-          rememberMe: testForms[1].rememberMe,
-        });
+      await test.step("Submit inline form with name, email and checkbox", async () => {
+        await pageManager
+          .onFormLayoutsPage()
+          .submitInlineFormWithNameEmailAndCheckbox({
+            name: testForms[1].name,
+            email: testForms[1].email,
+            rememberMe: testForms[1].rememberMe,
+          });
+      });
     });
   });
 
   test.describe("Datepicker Tests", () => {
     test("should select date from datepicker", async ({ pageManager }) => {
-      await pageManager.navigateTo().datePickerPage();
-      await pageManager
-        .onDatepickerPage()
-        .selectCommonDatepickerDateFromToday(7);
+      await test.step("Navigate to Datepicker page", async () => {
+        await pageManager.navigateTo().datePickerPage();
+      });
+
+      await test.step("Select date 7 days from today", async () => {
+        await pageManager
+          .onDatepickerPage()
+          .selectCommonDatepickerDateFromToday(7);
+      });
     });
 
     test("should select date range from datepicker", async ({
       pageManager,
     }) => {
-      await pageManager.navigateTo().datePickerPage();
-      await pageManager
-        .onDatepickerPage()
-        .selectDatepickerWithRangeFromToday(3, 5);
+      await test.step("Navigate to Datepicker page", async () => {
+        await pageManager.navigateTo().datePickerPage();
+      });
+
+      await test.step("Select date range from 3 to 5 days from today", async () => {
+        await pageManager
+          .onDatepickerPage()
+          .selectDatepickerWithRangeFromToday(3, 5);
+      });
     });
   });
 });
