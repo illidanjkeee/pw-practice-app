@@ -120,7 +120,7 @@ export class FormLayoutsPage extends BasePage {
   }
 
   /**
-   * Submits the grid form by clicking the Sign In button
+   * Submits the grid form by clicking the Sign-In button
    */
   private async submitGridForm(): Promise<void> {
     await this.gridForm.getByRole("button", { name: "Sign In" }).click();
