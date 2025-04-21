@@ -117,7 +117,7 @@ test.describe("Navigation and Form Tests", () => {
       await pageManager.navigateTo().datePickerPage();
       await pageManager
         .onDatepickerPage()
-        .selectDatepickerWithRangeFromToday(2, 5);
+        .selectDatepickerWithRangeFromToday(3, 5);
     });
   });
 });
