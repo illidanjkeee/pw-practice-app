@@ -108,7 +108,7 @@ test.describe("Navigation and Form Tests", () => {
       await pageManager.navigateTo().datePickerPage();
       await pageManager
         .onDatepickerPage()
-        .selectCommonDatepickerDateFromToday(10);
+        .selectCommonDatepickerDateFromToday(7);
     });
 
     test("should select date range from datepicker", async ({
