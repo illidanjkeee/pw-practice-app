@@ -1,20 +1,22 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "../fixtures/mainFixture";
 import { env } from "../utils/environment";
+import { Page } from "@playwright/test";
 
 test.describe("UI Component Tests", () => {
   // Common setup for all tests
-  test.beforeEach(async ({ page }) => {
-    await page.goto(env.baseUrl);
+  test.beforeEach(async ({ pageManager }) => {
+    await pageManager.getBasePage().navigateToHome();
   });
 
   test.describe("Form Layouts Page", () => {
     // Setup for form layout tests
-    test.beforeEach(async ({ page }) => {
-      await navigateToPage(page, "Forms", "Form Layouts");
+    test.beforeEach(async ({ pageManager }) => {
+      await pageManager.navigateTo().formLayoutsPage();
     });
 
-    test("Input Fields", async ({ page }) => {
+    test("Input Fields", async ({ pageManager }) => {
       // Get the email input from the "Using the Grid" form
+      const page = pageManager.navigateTo().page;
       const usingTheGridEmailInput = getFormElement(
         page,
         "Using the Grid",
@@ -35,7 +37,8 @@ test.describe("UI Component Tests", () => {
       await expect(usingTheGridEmailInput).toHaveValue(env.testUser.email);
     });
 
-    test("Radio Buttons", async ({ page }) => {
+    test("Radio Buttons", async ({ pageManager }) => {
+      const page = pageManager.navigateTo().page;
       const usingTheGridForm = page
         .locator("nb-card")
         .filter({ hasText: "Using the Grid" });
@@ -50,8 +53,9 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Toastr Page", () => {
-    test("Checkboxes", async ({ page }) => {
-      await navigateToPage(page, "Modal & Overlays", "Toastr");
+    test("Checkboxes", async ({ pageManager }) => {
+      await pageManager.navigateTo().toastrPage();
+      const page = pageManager.navigateTo().page;
 
       // Test individual checkbox interactions
       await page
@@ -71,7 +75,8 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Theme Selection", () => {
-    test("Theme dropdown changes header color", async ({ page }) => {
+    test("Theme dropdown changes header color", async ({ pageManager }) => {
+      const page = pageManager.navigateTo().page;
       // Define theme colors for verification
       const colorsPerTheme = [
         { theme: "Light", color: "rgb(255, 255, 255)" },
@@ -87,7 +92,8 @@ test.describe("UI Component Tests", () => {
       }
     });
 
-    test("Dropdown list content", async ({ page }) => {
+    test("Dropdown list content", async ({ pageManager }) => {
+      const page = pageManager.navigateTo().page;
       const dropDownMenu = page.locator("ngx-header nb-select");
       await dropDownMenu.click();
 
@@ -102,8 +108,9 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Tooltips", () => {
-    test("Tooltip shows on hover", async ({ page }) => {
-      await navigateToPage(page, "Modal & Overlays", "Tooltip");
+    test("Tooltip shows on hover", async ({ pageManager }) => {
+      await pageManager.navigateTo().tooltipPage();
+      const page = pageManager.navigateTo().page;
 
       // Hover over button and verify tooltip text
       const tooltipButton = page
@@ -117,8 +124,9 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Dialog Box", () => {
-    test("Confirm deletion dialog", async ({ page }) => {
-      await navigateToPage(page, "Tables & Data", "Smart Table");
+    test("Confirm deletion dialog", async ({ pageManager }) => {
+      await pageManager.navigateTo().smartTablePage();
+      const page = pageManager.navigateTo().page;
 
       // Handle dialog when it appears
       page.on("dialog", (dialog) => {
@@ -138,11 +146,13 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Smart Table", () => {
-    test.beforeEach(async ({ page }) => {
-      await navigateToPage(page, "Tables & Data", "Smart Table");
+    test.beforeEach(async ({ pageManager }) => {
+      await pageManager.navigateTo().smartTablePage();
     });
 
-    test("Edit table row data", async ({ page }) => {
+    test("Edit table row data", async ({ pageManager }) => {
+      const page = pageManager.navigateTo().page;
+
       // Edit age in first page
       const firstPageRow = page
         .locator("table")
@@ -165,7 +175,8 @@ test.describe("UI Component Tests", () => {
       );
     });
 
-    test("Table filtering by age", async ({ page }) => {
+    test("Table filtering by age", async ({ pageManager }) => {
+      const page = pageManager.navigateTo().page;
       const ages = env.testAgeFilters;
 
       for (const age of ages) {

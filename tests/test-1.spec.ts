@@ -1,18 +1,20 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/mainFixture";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:4200/");
-  await page.getByRole("link", { name: "Forms" }).click();
-  await page.getByRole("link", { name: "Form Layouts" }).click();
+test.beforeEach(async ({ pageManager }) => {
+  await pageManager.getBasePage().navigateToHome();
+  await pageManager.navigateTo().formLayoutsPage();
 });
 
-test("should fill and submit the form", async ({ page }) => {
+test("should fill and submit the form", async ({ pageManager }) => {
+  const page = pageManager.navigateTo().page;
+
   await page.goto("http://localhost:4200/pages/iot-dashboard");
-  await page.getByRole("link", { name: "Forms" }).click();
-  await page.getByRole("link", { name: "Form Layouts" }).click();
+  await pageManager.navigateTo().formLayoutsPage();
+
   const janeDoeTextbox = page.getByRole("textbox", { name: "Jane Doe" });
   await janeDoeTextbox.click();
   await janeDoeTextbox.fill("Jane Doe");
+
   const formLocator = page
     .locator("form")
     .filter({ hasText: "Remember meSubmit" });
@@ -26,7 +28,8 @@ test("should fill and submit the form", async ({ page }) => {
     .click();
 });
 
-test("assertions", async ({ page }) => {
+test("assertions", async ({ pageManager }) => {
+  const page = pageManager.navigateTo().page;
   const basicFormButton = page
     .locator("nb-card")
     .filter({ hasText: "Basic form" })

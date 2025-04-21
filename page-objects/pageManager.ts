@@ -3,6 +3,8 @@ import { NavigationPage } from "./navigationPage";
 import { FormLayoutsPage } from "./formLayoutsPage";
 import { DatepickerPage } from "./datepickerPage";
 import { ModalOverlaysPage } from "./modalOverlaysPage";
+import { BasePage } from "./basePage";
+import { HelperBase } from "./helperBase";
 
 export class PageManager {
   private readonly page: Page;
@@ -10,6 +12,8 @@ export class PageManager {
   private readonly formLayoutsPage: FormLayoutsPage;
   private readonly datepickerPage: DatepickerPage;
   private readonly modalOverlaysPage: ModalOverlaysPage;
+  private readonly basePage: BasePage;
+  private readonly helperBase: HelperBase;
 
   constructor(page: Page) {
     this.page = page;
@@ -17,6 +21,8 @@ export class PageManager {
     this.formLayoutsPage = new FormLayoutsPage(this.page);
     this.datepickerPage = new DatepickerPage(this.page);
     this.modalOverlaysPage = new ModalOverlaysPage(this.page);
+    this.basePage = new BasePage(this.page);
+    this.helperBase = new HelperBase(this.page);
   }
 
   navigateTo() {
@@ -33,5 +39,13 @@ export class PageManager {
 
   onModalOverlaysPage() {
     return this.modalOverlaysPage;
+  }
+
+  getBasePage() {
+    return this.basePage;
+  }
+
+  getHelpers() {
+    return this.helperBase;
   }
 }

@@ -1,5 +1,4 @@
-import { test, expect } from "@playwright/test";
-import { PageManager } from "../page-objects/pageManager";
+import { test, expect } from "../fixtures/mainFixture";
 import { env } from "../utils/environment";
 
 // Test data interfaces
@@ -61,27 +60,26 @@ const testForms: FormData[] = [
 ];
 
 test.describe("Navigation and Form Tests", () => {
-  let pm: PageManager;
-
-  test.beforeEach(async ({ page }) => {
-    pm = new PageManager(page);
-    await pm.navigateTo().navigateToHome();
+  test.beforeEach(async ({ pageManager }) => {
+    await pageManager.navigateTo().navigateToHome();
   });
 
   test.describe("Navigation Tests", () => {
     for (const page of navigationPages) {
-      test(`should navigate to ${page.name} page`, async () => {
-        await pm.navigateTo()[page.method]();
-        await expect(pm.navigateTo().page).toHaveURL(page.url);
+      test(`should navigate to ${page.name} page`, async ({ pageManager }) => {
+        await pageManager.navigateTo()[page.method]();
+        await expect(pageManager.navigateTo().page).toHaveURL(page.url);
       });
     }
   });
 
   test.describe("Form Submission Tests", () => {
-    test("should submit grid form with credentials", async () => {
-      await pm.navigateTo().formLayoutsPage();
+    test("should submit grid form with credentials", async ({
+      pageManager,
+    }) => {
+      await pageManager.navigateTo().formLayoutsPage();
 
-      await pm
+      await pageManager
         .onFormLayoutsPage()
         .submitUsingTheGridFormWithCredentialsAndSelectOption({
           email: testForms[0].email,
@@ -90,26 +88,36 @@ test.describe("Navigation and Form Tests", () => {
         });
     });
 
-    test("should submit inline form with user details", async () => {
-      await pm.navigateTo().formLayoutsPage();
+    test("should submit inline form with user details", async ({
+      pageManager,
+    }) => {
+      await pageManager.navigateTo().formLayoutsPage();
 
-      await pm.onFormLayoutsPage().submitInlineFormWithNameEmailAndCheckbox({
-        name: testForms[1].name,
-        email: testForms[1].email,
-        rememberMe: testForms[1].rememberMe,
-      });
+      await pageManager
+        .onFormLayoutsPage()
+        .submitInlineFormWithNameEmailAndCheckbox({
+          name: testForms[1].name,
+          email: testForms[1].email,
+          rememberMe: testForms[1].rememberMe,
+        });
     });
   });
 
   test.describe("Datepicker Tests", () => {
-    test("should select date from datepicker", async () => {
-      await pm.navigateTo().datePickerPage();
-      await pm.onDatepickerPage().selectCommonDatepickerDateFromToday(5);
+    test("should select date from datepicker", async ({ pageManager }) => {
+      await pageManager.navigateTo().datePickerPage();
+      await pageManager
+        .onDatepickerPage()
+        .selectCommonDatepickerDateFromToday(5);
     });
 
-    test("should select date range from datepicker", async () => {
-      await pm.navigateTo().datePickerPage();
-      await pm.onDatepickerPage().selectDatepickerWithRangeFromToday(2, 5);
+    test("should select date range from datepicker", async ({
+      pageManager,
+    }) => {
+      await pageManager.navigateTo().datePickerPage();
+      await pageManager
+        .onDatepickerPage()
+        .selectDatepickerWithRangeFromToday(2, 5);
     });
   });
 });
