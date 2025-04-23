@@ -2,21 +2,6 @@ import { test } from "../fixtures/mainFixture";
 import { navigationPages, testForms } from "../testData/navigationData";
 import { navigateAndVerify } from "../helpers/navigationHelper";
 
-// Test data interfaces
-interface NavigationTestData {
-  name: string;
-  method: string;
-  url: string;
-}
-
-interface FormData {
-  email: string;
-  password: string;
-  name?: string;
-  option?: string;
-  rememberMe?: boolean;
-}
-
 test.describe("Navigation and Form Tests", () => {
   test.beforeEach(async ({ pageManager }) => {
     await test.step("Navigate to home page", async () => {

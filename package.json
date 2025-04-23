@@ -2,6 +2,7 @@
   "name": "ngx-admin",
   "version": "10.0.0",
   "license": "MIT",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bondar-artem/pw-practice-app.git"
@@ -65,11 +66,13 @@
     "@playwright/test": "^1.50.1",
     "@types/leaflet": "1.2.3",
     "@types/node": "^12.12.70",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@typescript-eslint/parser": "^5.62.0",
     "codelyzer": "^0.0.28",
     "conventional-changelog-cli": "^2.2.2",
     "dotenv": "^16.4.7",
     "eslint": "^8.57.1",
+    "eslint-plugin-playwright": "^2.2.0",
     "npm-run-all": "4.0.2",
     "prettier": "^3.5.3",
     "prettier-eslint": "^16.3.0",

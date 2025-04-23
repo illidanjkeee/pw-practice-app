@@ -32,8 +32,8 @@ test.describe("UI Component Tests", () => {
       });
 
       // Verify input value using two different methods
-      const inputValue = await usingTheGridEmailInput.inputValue();
-      expect(inputValue).toBe(env.testUser.email);
+      const inputValue = usingTheGridEmailInput;
+      await expect(inputValue).toHaveValue(env.testUser.email);
       await expect(usingTheGridEmailInput).toHaveValue(env.testUser.email);
     });
 
@@ -192,28 +192,14 @@ test.describe("UI Component Tests", () => {
           // Check all visible rows match the filter
           const allRows = await rows.all();
           for (const row of allRows) {
-            const rowAge = await row.locator("td").last().textContent();
-            expect(rowAge).toBe(age);
+            const rowAge = row.locator("td").last();
+            await expect(rowAge).toHaveText(age);
           }
         }
       }
     });
   });
 });
-
-// Helper functions
-
-/**
- * Navigate to a specific page using the main menu
- */
-async function navigateToPage(
-  page: Page,
-  menuItem: string,
-  subMenuItem: string,
-): Promise<void> {
-  await page.getByRole("link", { name: menuItem }).click();
-  await page.getByRole("link", { name: subMenuItem }).click();
-}
 
 /**
  * Get an element from a specific form
@@ -223,7 +209,7 @@ function getFormElement(
   formName: string,
   role: string,
   name: string,
-): any {
+) {
   return page
     .locator("nb-card")
     .filter({ hasText: formName })
