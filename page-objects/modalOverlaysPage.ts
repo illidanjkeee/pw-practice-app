@@ -82,21 +82,8 @@ export class ModalOverlaysPage extends BasePage {
     this.cancelButton = this.page.locator("button:has-text('Cancel')");
   }
 
-  // Dialog interaction methods
-  async openDialogWithComponent(): Promise<void> {
-    await this.openDialogWithComponentButton.click();
-  }
-
   async openDialogWithTemplate(): Promise<void> {
     await this.openDialogWithTemplateButton.click();
-  }
-
-  async openDialogWithBackdrop(): Promise<void> {
-    await this.openDialogWithBackdropButton.click();
-  }
-
-  async openDialogWithoutBackdrop(): Promise<void> {
-    await this.openDialogWithoutBackdropButton.click();
   }
 
   async openDialogWithEscClose(): Promise<void> {
@@ -121,18 +108,6 @@ export class ModalOverlaysPage extends BasePage {
 
   async closeDialog(): Promise<void> {
     await this.dialogCloseButton.click();
-  }
-
-  async submitDialog(): Promise<void> {
-    await this.submitButton.click();
-  }
-  async cancelDialog(): Promise<void> {
-    await this.cancelButton.click();
-  }
-
-  async enterName(name: string): Promise<void> {
-    await this.nameInput.fill(name);
-    await this.nameInput.press("Enter");
   }
 
   async getDialogText(): Promise<string> {
