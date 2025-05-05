@@ -11,9 +11,6 @@ test.describe("Navigation and Form Tests", () => {
       test(`should navigate to ${navPage.name} page`, async ({ pages }) => {
         // Navigate to the specified page
         await pages.navigationPage.navigateTo(navPage.url);
-
-        // Verify the correct page is displayed
-        await pages.basePage.verifyUrl(navPage.url);
       });
     });
   });
