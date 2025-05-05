@@ -32,9 +32,10 @@ export function step(stepName?: string) {
     // Experimental decorator pattern
     else if (propertyKey && descriptorOrContext) {
       const descriptor = descriptorOrContext as PropertyDescriptor;
-      const originalMethod = descriptor.value;
+      const originalMethod = descriptor?.value;
 
       if (typeof originalMethod !== "function") {
+        // Handle case when decorator is applied to a property or getter/setter
         console.warn(
           `Step decorator applied to non-method: ${String(propertyKey)}`,
         );
@@ -57,8 +58,7 @@ export function step(stepName?: string) {
             return await result;
           }
 
-          // If the result is an object with methods (for chaining),
-          // return the result directly to enable method chaining
+          // Return the result directly to enable method chaining
           return result;
         } catch (error) {
           console.error(`Error in step "${name}":`, error);
@@ -69,8 +69,8 @@ export function step(stepName?: string) {
       return descriptor;
     }
 
-    // Fallback for unexpected usage
-    console.warn("Step decorator applied in an unexpected way");
+    // Just return the target silently instead of warning
+    // This allows stacked decorators to work without warnings
     return target;
   };
 }
