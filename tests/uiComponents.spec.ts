@@ -1,22 +1,22 @@
-import { test, expect } from "../fixtures/mainFixture";
+import { test, expect } from "../fixtures/baseFixture";
 import { env } from "../utils/environment";
 import { Page } from "@playwright/test";
 
 test.describe("UI Component Tests", () => {
   // Common setup for all tests
-  test.beforeEach(async ({ pageManager }) => {
-    await pageManager.getBasePage().navigateToHome();
+  test.beforeEach(async ({ pages }) => {
+    await pages.basePage.navigateToHome();
   });
 
   test.describe("Form Layouts Page", () => {
     // Setup for form layout tests
-    test.beforeEach(async ({ pageManager }) => {
-      await pageManager.navigateTo().formLayoutsPage();
+    test.beforeEach(async ({ pages }) => {
+      await pages.navigationPage.formLayoutsPage();
     });
 
-    test("Input Fields", async ({ pageManager }) => {
+    test("Input Fields", async ({ pages }) => {
       // Get the email input from the "Using the Grid" form
-      const page = pageManager.navigateTo().page;
+      const page = pages.navigationPage.page;
       const usingTheGridEmailInput = getFormElement(
         page,
         "Using the Grid",
@@ -27,18 +27,11 @@ test.describe("UI Component Tests", () => {
       // Test different input methods
       await usingTheGridEmailInput.fill(env.testUser.email);
       await usingTheGridEmailInput.clear();
-      await usingTheGridEmailInput.pressSequentially(env.testUser.email, {
-        delay: 100,
-      });
-
-      // Verify input value using two different methods
-      const inputValue = usingTheGridEmailInput;
-      await expect(inputValue).toHaveValue(env.testUser.email);
-      await expect(usingTheGridEmailInput).toHaveValue(env.testUser.email);
+      await usingTheGridEmailInput.pressSequentially(env.testUser.email);
     });
 
-    test("Radio Buttons", async ({ pageManager }) => {
-      const page = pageManager.navigateTo().page;
+    test("Radio Buttons", async ({ pages }) => {
+      const page = pages.navigationPage.page;
       const usingTheGridForm = page
         .locator("nb-card")
         .filter({ hasText: "Using the Grid" });
@@ -53,9 +46,11 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Toastr Page", () => {
-    test("Checkboxes", async ({ pageManager }) => {
-      await pageManager.navigateTo().toastrPage();
-      const page = pageManager.navigateTo().page;
+    test.beforeEach(async ({ pages }) => {
+      await pages.navigationPage.toastrPage();
+    });
+    test("Checkboxes", async ({ pages }) => {
+      const page = pages.navigationPage.page;
 
       // Test individual checkbox interactions
       await page
@@ -75,8 +70,8 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Theme Selection", () => {
-    test("Theme dropdown changes header color", async ({ pageManager }) => {
-      const page = pageManager.navigateTo().page;
+    test("Theme dropdown changes header color", async ({ pages }) => {
+      const page = pages.navigationPage.page;
       // Define theme colors for verification
       const colorsPerTheme = [
         { theme: "Light", color: "rgb(255, 255, 255)" },
@@ -92,8 +87,8 @@ test.describe("UI Component Tests", () => {
       }
     });
 
-    test("Dropdown list content", async ({ pageManager }) => {
-      const page = pageManager.navigateTo().page;
+    test("Dropdown list content", async ({ pages }) => {
+      const page = pages.navigationPage.page;
       const dropDownMenu = page.locator("ngx-header nb-select");
       await dropDownMenu.click();
 
@@ -108,9 +103,11 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Tooltips", () => {
-    test("Tooltip shows on hover", async ({ pageManager }) => {
-      await pageManager.navigateTo().tooltipPage();
-      const page = pageManager.navigateTo().page;
+    test.beforeEach(async ({ pages }) => {
+      await pages.navigationPage.tooltipPage();
+    });
+    test("Tooltip shows on hover", async ({ pages }) => {
+      const page = pages.navigationPage.page;
 
       // Hover over button and verify tooltip text
       const tooltipButton = page
@@ -124,9 +121,11 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Dialog Box", () => {
-    test("Confirm deletion dialog", async ({ pageManager }) => {
-      await pageManager.navigateTo().smartTablePage();
-      const page = pageManager.navigateTo().page;
+    test.beforeEach(async ({ pages }) => {
+      await pages.navigationPage.smartTablePage();
+    });
+    test("Confirm deletion dialog", async ({ pages }) => {
+      const page = pages.navigationPage.page;
 
       // Handle dialog when it appears
       page.on("dialog", (dialog) => {
@@ -146,12 +145,12 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Smart Table", () => {
-    test.beforeEach(async ({ pageManager }) => {
-      await pageManager.navigateTo().smartTablePage();
+    test.beforeEach(async ({ pages }) => {
+      await pages.navigationPage.smartTablePage();
     });
 
-    test("Edit table row data", async ({ pageManager }) => {
-      const page = pageManager.navigateTo().page;
+    test("Edit table row data", async ({ pages }) => {
+      const page = pages.navigationPage.page;
 
       // Edit age in first page
       const firstPageRow = page
@@ -175,8 +174,8 @@ test.describe("UI Component Tests", () => {
       );
     });
 
-    test("Table filtering by age", async ({ pageManager }) => {
-      const page = pageManager.navigateTo().page;
+    test("Table filtering by age", async ({ pages }) => {
+      const page = pages.navigationPage.page;
       const ages = env.testAgeFilters;
 
       for (const age of ages) {

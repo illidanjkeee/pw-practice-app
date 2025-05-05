@@ -1,5 +1,6 @@
 import { Page, Locator } from "@playwright/test";
 import { BasePage } from "./basePage";
+import { step } from "../helpers/decorators/step";
 
 /**
  * Represents a page object for Modal Overlays page.
@@ -82,38 +83,47 @@ export class ModalOverlaysPage extends BasePage {
     this.cancelButton = this.page.locator("button:has-text('Cancel')");
   }
 
+  @step("Open dialog with template")
   async openDialogWithTemplate(): Promise<void> {
     await this.openDialogWithTemplateButton.click();
   }
 
+  @step("Open dialog with ESC close")
   async openDialogWithEscClose(): Promise<void> {
     await this.openDialogWithEscCloseButton.click();
   }
 
+  @step("Open dialog without ESC close")
   async openDialogWithoutEscClose(): Promise<void> {
     await this.openDialogWithoutEscCloseButton.click();
   }
 
+  @step("Open dialog with backdrop click")
   async openDialogWithBackdropClick(): Promise<void> {
     await this.openDialogWithBackdropClickButton.click();
   }
 
+  @step("Open dialog without backdrop click")
   async openDialogWithoutBackdropClick(): Promise<void> {
     await this.openWithoutBackdropClickButton.click();
   }
 
+  @step("Open Enter Name dialog")
   async openEnterNameDialog(): Promise<void> {
     await this.enterNameButton.click();
   }
 
+  @step("Close dialog using close button")
   async closeDialog(): Promise<void> {
     await this.dialogCloseButton.click();
   }
 
+  @step("Get dialog text content")
   async getDialogText(): Promise<string> {
     return (await this.dialogBody.textContent()) || "";
   }
 
+  @step("Get list of names from dialog")
   async getNamesList(): Promise<string[]> {
     const names: string[] = [];
     const count = await this.namesItems.count();
@@ -125,28 +135,33 @@ export class ModalOverlaysPage extends BasePage {
     return names;
   }
 
+  @step("Check if dialog is visible")
   async isDialogVisible(): Promise<boolean> {
     return await this.dialogCard.isVisible();
   }
 
-  // Additional utility methods
+  @step("Wait for dialog to appear")
   async waitForDialogToAppear(): Promise<void> {
     await this.dialogCard.waitFor({ state: "visible" });
   }
 
+  @step("Wait for dialog to disappear")
   async waitForDialogToDisappear(): Promise<void> {
     await this.dialogCard.waitFor({ state: "hidden" });
   }
 
+  @step("Close dialog using ESC key")
   async closeDialogByEscKey(): Promise<void> {
     await this.page.keyboard.press("Escape");
   }
 
+  @step("Close dialog by clicking backdrop")
   async closeDialogByClickingBackdrop(): Promise<void> {
     // Click outside the dialog card to trigger backdrop click
     await this.page.mouse.click(10, 10);
   }
 
+  @step("Get total count of names")
   async getNamesCount(): Promise<number> {
     return await this.namesItems.count();
   }
@@ -155,6 +170,7 @@ export class ModalOverlaysPage extends BasePage {
    * Enters a name in the dialog and submits it
    * @param name The name to enter and submit
    */
+  @step("Enter name and submit dialog")
   async enterNameAndSubmit(name: string): Promise<void> {
     // Find the input field and enter the name
     await this.nameInput.fill(name);
@@ -162,6 +178,7 @@ export class ModalOverlaysPage extends BasePage {
     await this.submitButton.click();
   }
 
+  @step("Enter name and cancel dialog")
   async enterNameAndCancel(name: string): Promise<void> {
     await this.page.fill('input[placeholder="Name"]', name);
     await this.page.click('button:has-text("Cancel")');

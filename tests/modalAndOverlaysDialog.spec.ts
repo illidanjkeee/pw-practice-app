@@ -1,16 +1,14 @@
-import { test, expect } from "../fixtures/mainFixture";
+import { test, expect } from "../fixtures/baseFixture";
 
 test.describe("Modal Dialog Tests", () => {
-  test.beforeEach(async ({ pageManager }) => {
+  test.beforeEach(async ({ pages }) => {
     // Navigate to the dialog page
-    await pageManager.getBasePage().navigateToHome();
-    await pageManager.navigateTo().dialogPage();
+    await pages.navigationPage.navigateToHome();
+    await pages.navigateTo().dialogPage();
   });
 
-  test("should open and close dialog with template", async ({
-    pageManager,
-  }) => {
-    const modalOverlaysPage = pageManager.onModalOverlaysPage();
+  test("should open and close dialog with template", async ({ pages }) => {
+    const modalOverlaysPage = pages.onModalOverlaysPage();
 
     // Open dialog
     await modalOverlaysPage.openDialogWithTemplate();
@@ -29,9 +27,9 @@ test.describe("Modal Dialog Tests", () => {
   });
 
   test("should close dialog with escape key when ESC close is enabled", async ({
-    pageManager,
+    pages,
   }) => {
-    const modalOverlaysPage = pageManager.onModalOverlaysPage();
+    const modalOverlaysPage = pages.onModalOverlaysPage();
 
     // Open dialog with ESC close enabled and verify it's visible
     await modalOverlaysPage.openDialogWithEscClose();
@@ -45,10 +43,10 @@ test.describe("Modal Dialog Tests", () => {
   });
 
   test("should NOT close dialog with escape key when ESC close is disabled", async ({
-    pageManager,
+    pages,
   }) => {
-    const modalOverlaysPage = pageManager.onModalOverlaysPage();
-    const page = pageManager.navigateTo().page;
+    const modalOverlaysPage = pages.onModalOverlaysPage();
+    const page = pages.navigateTo().page;
 
     // Open dialog with ESC close disabled
     await modalOverlaysPage.openDialogWithoutEscClose();
@@ -66,9 +64,9 @@ test.describe("Modal Dialog Tests", () => {
   });
 
   test("should close dialog with backdrop click when enabled", async ({
-    pageManager,
+    pages,
   }) => {
-    const modalOverlaysPage = pageManager.onModalOverlaysPage();
+    const modalOverlaysPage = pages.onModalOverlaysPage();
 
     // Open dialog with backdrop click enabled
     await modalOverlaysPage.openDialogWithBackdropClick();
@@ -82,10 +80,10 @@ test.describe("Modal Dialog Tests", () => {
   });
 
   test("should NOT close dialog with backdrop click when disabled", async ({
-    pageManager,
+    pages,
   }) => {
-    const modalOverlaysPage = pageManager.onModalOverlaysPage();
-    const page = pageManager.navigateTo().page;
+    const modalOverlaysPage = pages.onModalOverlaysPage();
+    const page = pages.navigateTo().page;
 
     // Open dialog with backdrop click disabled
     await modalOverlaysPage.openDialogWithoutBackdropClick();
@@ -103,9 +101,9 @@ test.describe("Modal Dialog Tests", () => {
   });
 
   test("should add names to the list in the enter name dialog", async ({
-    pageManager,
+    pages,
   }) => {
-    const modalOverlaysPage = pageManager.onModalOverlaysPage();
+    const modalOverlaysPage = pages.onModalOverlaysPage();
 
     // Define test names
     const namesToAdd = ["Alice", "Bob", "Charlie"];
@@ -130,8 +128,8 @@ test.describe("Modal Dialog Tests", () => {
     }
   });
 
-  test("should not add name when cancelled", async ({ pageManager }) => {
-    const modalOverlaysPage = pageManager.onModalOverlaysPage();
+  test("should not add name when cancelled", async ({ pages }) => {
+    const modalOverlaysPage = pages.onModalOverlaysPage();
 
     // Get initial count of names
     const initialNamesCount = await modalOverlaysPage.getNamesCount();

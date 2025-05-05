@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/mainFixture";
+import { test, expect } from "../fixtures/baseFixture";
 import { NavigationTestData } from "../testData/navigationData";
 
 export async function navigateAndVerify(pageManager, page: NavigationTestData) {

@@ -1,5 +1,6 @@
 import { Locator, Page } from "@playwright/test";
 import { BasePage } from "./basePage";
+import { step } from "../helpers/decorators/step";
 
 export class NavigationPage extends BasePage {
   // Menu items
@@ -35,6 +36,7 @@ export class NavigationPage extends BasePage {
    * @param menuItemText The text of the menu item to click
    * @returns Promise that resolves when navigation is complete
    */
+  @step("Navigate to menu item")
   async navigateToMenuItem(menuItemText: string): Promise<void> {
     // Find which group contains this menu item
     let group: string | undefined;
@@ -54,26 +56,32 @@ export class NavigationPage extends BasePage {
   }
 
   // Simplified page navigation methods
+  @step("Navigate to Form Layouts page")
   async formLayoutsPage(): Promise<void> {
     await this.navigateToMenuItem("Form Layouts");
   }
 
+  @step("Navigate to Toastr page")
   async toastrPage(): Promise<void> {
     await this.navigateToMenuItem("Toastr");
   }
 
+  @step("Navigate to Datepicker page")
   async datePickerPage(): Promise<void> {
     await this.navigateToMenuItem("Datepicker");
   }
 
+  @step("Navigate to Smart Table page")
   async smartTablePage(): Promise<void> {
     await this.navigateToMenuItem("Smart Table");
   }
 
+  @step("Navigate to Tooltip page")
   async tooltipPage(): Promise<void> {
     await this.navigateToMenuItem("Tooltip");
   }
 
+  @step("Navigate to Dialog page")
   async dialogPage(): Promise<void> {
     await this.navigateToMenuItem("Dialog");
   }
@@ -85,6 +93,7 @@ export class NavigationPage extends BasePage {
    * @returns A promise that resolves when the group menu item has been selected
    * @private
    */
+  @step("Select group menu item")
   private async selectGroupMenuItem(groupItemTitle: string): Promise<void> {
     let groupMenuItem = this.groupMenuItemCache.get(groupItemTitle);
 
