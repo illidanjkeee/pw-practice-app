@@ -1,6 +1,5 @@
 import { expect, Page, Locator } from "@playwright/test";
 import { BasePage } from "./basePage";
-import { step } from "../helpers/decorators/step";
 
 /**
  * Represents a page object for handling date picker interactions.
@@ -54,7 +53,6 @@ export class DatepickerPage extends BasePage {
    * @param numberOfDaysFromToday Number of days to add to today's date
    */
 
-  @step("Select date from common datepicker")
   async selectCommonDatepickerDateFromToday(
     numberOfDaysFromToday: number,
   ): Promise<void> {
@@ -70,7 +68,7 @@ export class DatepickerPage extends BasePage {
    * @param startDayFromToday Number of days from today for the start date
    * @param endDayFromToday Number of days from today for the end date
    */
-  @step("Select date range from datepicker")
+
   async selectDatepickerWithRangeFromToday(
     startDayFromToday: number,
     endDayFromToday: number,
@@ -94,7 +92,7 @@ export class DatepickerPage extends BasePage {
   /**
    * Calculates target date based on days from today
    */
-  @step("Calculate target date")
+
   private calculateTargetDate(daysToAdd: number): Date {
     const date = new Date();
     date.setDate(date.getDate() + daysToAdd);
@@ -104,18 +102,16 @@ export class DatepickerPage extends BasePage {
   /**
    * Formats date for assertion
    */
-  @step("Format date for assertion")
+
   private formatDateForAssertion(date: Date): string {
     const day = date.getDate().toString();
     const month = date.toLocaleString("default", { month: "short" });
     const year = date.getFullYear();
     return `${month} ${day}, ${year}`;
   }
-
   /**
    * Navigates to the target month in calendar
    */
-  @step("Navigate to target month")
   private async navigateToTargetMonth(targetDate: Date): Promise<void> {
     const expectedMonth = targetDate.toLocaleString("default", {
       month: "long",
@@ -140,11 +136,9 @@ export class DatepickerPage extends BasePage {
       }
     }
   }
-
   /**
    * Selects the target day in calendar
    */
-  @step("Select specific day")
   private async selectDay(date: Date): Promise<void> {
     const dayString = date.getDate().toString();
     await this.activeDayCell.getByText(dayString, { exact: true }).click();
@@ -153,7 +147,6 @@ export class DatepickerPage extends BasePage {
   /**
    * Selects the target date range in calendar
    */
-  @step("Select date range")
   private async selectDayRange(startDate: Date, endDate: Date): Promise<void> {
     await this.navigateToTargetMonth(startDate);
 
@@ -169,7 +162,6 @@ export class DatepickerPage extends BasePage {
   /**
    * Verifies the selected date in input field
    */
-  @step("Verify selected date")
   private async verifySelectedDate(
     date: Date,
     inputField: Locator,

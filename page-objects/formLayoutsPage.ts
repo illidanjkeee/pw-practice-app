@@ -1,6 +1,5 @@
 import { Page, Locator } from "@playwright/test";
 import { BasePage } from "./basePage";
-import { step } from "../helpers/decorators/step";
 
 /**
  * Interface representing form input data
@@ -42,7 +41,7 @@ export class FormLayoutsPage extends BasePage {
    * @param credentials - Form data including email, password, and option
    * @throws Will throw an error if form elements are not visible
    */
-  @step("Submit grid form with credentials and select option")
+
   async submitUsingTheGridFormWithCredentialsAndSelectOption(
     credentials: FormCredentials,
   ): Promise<void> {
@@ -60,7 +59,7 @@ export class FormLayoutsPage extends BasePage {
    * @param credentials - Form data including name, email, and remember me option
    * @throws Will throw an error if form elements are not visible
    */
-  @step("Submit inline form with name, email and checkbox")
+
   async submitInlineFormWithNameEmailAndCheckbox(
     credentials: FormCredentials,
   ): Promise<void> {
@@ -98,7 +97,7 @@ export class FormLayoutsPage extends BasePage {
    * Fills the grid form fields with provided credentials
    * @param credentials - Object containing email and password
    */
-  @step("Fill grid form fields")
+
   private async fillGridFormFields(
     credentials: FormCredentials,
   ): Promise<void> {
@@ -114,7 +113,7 @@ export class FormLayoutsPage extends BasePage {
    * @param optionText - Text of the radio option to select
    * @throws Will throw if the option is not found or not visible
    */
-  @step("Select grid form radio option")
+
   private async selectGridFormOption(optionText: string): Promise<void> {
     const radioOption = this.gridForm.locator(
       `label:has-text("${optionText}")`,
@@ -126,7 +125,6 @@ export class FormLayoutsPage extends BasePage {
   /**
    * Submits the grid form by clicking the Sign-In button
    */
-  @step("Submit grid form")
   private async submitGridForm(): Promise<void> {
     await this.gridForm.getByRole("button", { name: "Sign In" }).click();
   }
@@ -135,7 +133,6 @@ export class FormLayoutsPage extends BasePage {
    * Fills the inline form fields with provided credentials
    * @param credentials - Object containing name and email
    */
-  @step("Fill inline form fields")
   private async fillInlineFormFields(
     credentials: FormCredentials,
   ): Promise<void> {
@@ -148,7 +145,6 @@ export class FormLayoutsPage extends BasePage {
    * Handles the remember me checkbox in the inline form
    * @param rememberMe - Boolean indicating whether to check the remember me box
    */
-  @step("Handle remember me checkbox")
   private async handleRememberMe(rememberMe: boolean): Promise<void> {
     if (rememberMe) {
       await this.inlineForm
@@ -160,7 +156,6 @@ export class FormLayoutsPage extends BasePage {
   /**
    * Submits the inline form by clicking the Submit button
    */
-  @step("Submit inline form")
   private async submitInlineForm(): Promise<void> {
     await this.inlineForm.getByRole("button", { name: "Submit" }).click();
   }
