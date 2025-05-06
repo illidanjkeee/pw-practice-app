@@ -79,11 +79,7 @@ test.describe("UI Component Tests", () => {
   });
 
   test.describe("Theme Selection", () => {
-    // For theme tests we need to create a ThemePage class
-    // Using navigationPage for now as that has access to the page
-
     test("Theme dropdown changes header color", async ({ navigationPage }) => {
-      // We don't have a ThemePage in the fixtures, so using navigationPage.page
       const page = navigationPage.page;
 
       await test.step("Test different theme colors", async () => {
@@ -162,10 +158,7 @@ test.describe("UI Component Tests", () => {
       await navigationPage.smartTablePage();
     });
 
-    test("Confirm deletion dialog", async ({
-      navigationPage,
-      modalOverlaysPage,
-    }) => {
+    test("Confirm deletion dialog", async ({ navigationPage }) => {
       const page = navigationPage.page;
 
       await test.step("Set up dialog handler", async () => {
