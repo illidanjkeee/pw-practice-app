@@ -73,6 +73,22 @@ export class FormLayoutsPage extends BasePage {
   }
 
   /**
+   * Returns the grid form element for verification purposes
+   * @returns Locator for the grid form
+   */
+  async getGridFormElement(): Promise<Locator> {
+    return this.gridForm;
+  }
+
+  /**
+   * Returns the inline form element for verification purposes
+   * @returns Locator for the inline form
+   */
+  async getInlineFormElement(): Promise<Locator> {
+    return this.inlineForm;
+  }
+
+  /**
    * Initializes the grid form locator
    * @returns Locator for the grid form
    */
@@ -158,5 +174,19 @@ export class FormLayoutsPage extends BasePage {
    */
   private async submitInlineForm(): Promise<void> {
     await this.inlineForm.getByRole("button", { name: "Submit" }).click();
+  }
+
+  /**
+   * Gets an element from a specific form
+   * @param formName The name of the form to search in
+   * @param role The role of the element to find
+   * @param name The name of the element to find
+   * @returns The located element
+   */
+  getFormElement(formName: string, role: string, name: string): Locator {
+    return this.page
+      .locator("nb-card")
+      .filter({ hasText: formName })
+      .getByRole(role as any, { name });
   }
 }

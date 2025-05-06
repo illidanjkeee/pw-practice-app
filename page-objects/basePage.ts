@@ -15,9 +15,8 @@ export class BasePage {
    * Navigate to a specific route
    * @param path The route path (without base URL)
    */
-  async navigateTo(route: string): Promise<void> {
-    const normalizedRoute = route.startsWith("/") ? route : `/${route}`;
-    await this.page.goto(`${BASE_URL}${normalizedRoute}`);
+  async navigateTo(url: string): Promise<void> {
+    await this.page.goto(url);
   }
 
   /**

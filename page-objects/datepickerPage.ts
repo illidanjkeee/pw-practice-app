@@ -29,6 +29,7 @@ export class DatepickerPage extends BasePage {
   private readonly nextMonthButton: Locator;
   private readonly prevMonthButton: Locator;
   private readonly activeDayCell: Locator;
+  private readonly commonDatepicker: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -45,6 +46,9 @@ export class DatepickerPage extends BasePage {
     );
     this.activeDayCell = this.page.locator(
       ".day-cell.ng-star-inserted:not(.bounding-month)",
+    );
+    this.commonDatepicker = this.page.locator(
+      'input[placeholder="Form Picker"]',
     );
   }
 
