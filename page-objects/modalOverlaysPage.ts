@@ -156,9 +156,7 @@ export class ModalOverlaysPage extends BasePage {
    */
 
   async enterNameAndSubmit(name: string): Promise<void> {
-    // Find the input field and enter the name
     await this.nameInput.fill(name);
-    // Click the submit button
     await this.submitButton.click();
   }
 

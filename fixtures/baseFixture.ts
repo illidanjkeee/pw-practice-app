@@ -5,7 +5,7 @@ import { DatepickerPage } from "../page-objects/datepickerPage";
 import { ModalOverlaysPage } from "../page-objects/modalOverlaysPage";
 import { BasePage } from "../page-objects/basePage";
 
-// Define a class that will hold all page objects
+// a class that will hold all page objects
 export class Pages {
   readonly basePage: BasePage;
   readonly navigationPage: NavigationPage;
@@ -41,7 +41,6 @@ export const test = base.extend<MainFixtures>({
     await use(pages);
   },
 
-  // Keep individual fixtures that now reference the pages fixture
   basePage: async ({ pages }, use) => {
     await use(pages.basePage);
   },
@@ -63,5 +62,4 @@ export const test = base.extend<MainFixtures>({
   },
 });
 
-// Export the expect object from the base test
 export { expect } from "@playwright/test";

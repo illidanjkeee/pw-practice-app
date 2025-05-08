@@ -22,14 +22,12 @@ import { BasePage } from "./basePage";
  * await datepicker.selectDatepickerWithRangeFromToday(1, 7); // Selects date range from tomorrow to 7 days ahead
  */
 export class DatepickerPage extends BasePage {
-  // Locators
   private readonly calendarInput: Locator;
   private readonly calendarInputWithRange: Locator;
   private readonly calendarViewMode: Locator;
   private readonly nextMonthButton: Locator;
   private readonly prevMonthButton: Locator;
   private readonly activeDayCell: Locator;
-  private readonly commonDatepicker: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -47,9 +45,6 @@ export class DatepickerPage extends BasePage {
     this.activeDayCell = this.page.locator(
       ".day-cell.ng-star-inserted:not(.bounding-month)",
     );
-    this.commonDatepicker = this.page.locator(
-      'input[placeholder="Form Picker"]',
-    );
   }
 
   /**
@@ -66,12 +61,6 @@ export class DatepickerPage extends BasePage {
     await this.selectDay(targetDate);
     await this.verifySelectedDate(targetDate, this.calendarInput);
   }
-
-  /**
-   * Selects a date range in the datepicker
-   * @param startDayFromToday Number of days from today for the start date
-   * @param endDayFromToday Number of days from today for the end date
-   */
 
   async selectDatepickerWithRangeFromToday(
     startDayFromToday: number,
@@ -93,19 +82,11 @@ export class DatepickerPage extends BasePage {
     });
   }
 
-  /**
-   * Calculates target date based on days from today
-   */
-
   private calculateTargetDate(daysToAdd: number): Date {
     const date = new Date();
     date.setDate(date.getDate() + daysToAdd);
     return date;
   }
-
-  /**
-   * Formats date for assertion
-   */
 
   private formatDateForAssertion(date: Date): string {
     const day = date.getDate().toString();
@@ -113,9 +94,7 @@ export class DatepickerPage extends BasePage {
     const year = date.getFullYear();
     return `${month} ${day}, ${year}`;
   }
-  /**
-   * Navigates to the target month in calendar
-   */
+
   private async navigateToTargetMonth(targetDate: Date): Promise<void> {
     const expectedMonth = targetDate.toLocaleString("default", {
       month: "long",
