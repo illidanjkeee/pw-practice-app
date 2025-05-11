@@ -8,7 +8,7 @@ test.describe("Modal Window Tests", () => {
 
   test("should open and close modal window form", async ({ windowPage }) => {
     await test.step("Open window form", async () => {
-      await windowPage.openWindowFormButton.click();
+      await windowPage.openWindowForm();
       expect(await windowPage.waitForWindowToAppear());
     });
     await test.step("Fill in form fields", async () => {

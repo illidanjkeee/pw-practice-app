@@ -22,7 +22,7 @@ export class WindowPage extends BasePage {
   readonly minimizeWindowButton: Locator;
   readonly collapseWindowButton: Locator;
   readonly hideWindowButton: Locator;
-  readonly openWindowForm: Locator;
+  readonly openWindowFormCard: Locator;
   constructor(page: Page) {
     super(page);
 
@@ -39,7 +39,7 @@ export class WindowPage extends BasePage {
     this.openWindowWithoutBackdropButton = this.page.locator(
       "button:has-text('Open Window Without Backdrop')",
     );
-    this.openWindowForm = this.page.locator(
+    this.openWindowFormCard = this.page.locator(
       "//nb-window[@class='full-screen ng-star-inserted']//nb-card",
     );
     this.openWindowFormSubjectInput = this.page.locator("#subject");
@@ -58,6 +58,10 @@ export class WindowPage extends BasePage {
    * Waits for the dialog to appear.
    */
   async waitForWindowToAppear() {
-    await this.openWindowForm.waitFor({ state: "visible" });
+    await this.openWindowFormCard.waitFor({ state: "visible" });
+  }
+
+  async openWindowForm() {
+    await this.openWindowFormButton.click();
   }
 }
