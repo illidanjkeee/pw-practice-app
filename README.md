@@ -192,6 +192,41 @@ This project can be easily integrated with CI/CD pipelines:
 - **Jenkins** - Schedule regular test runs
 - **Azure DevOps** - Integrate with build pipelines
 
+## 🔄 GitHub Actions CI/CD Setup
+
+This project includes a GitHub Actions workflow to automatically run Playwright tests on push, pull request, or manual trigger.
+
+### Setting Up GitHub Secrets
+
+For the tests to run correctly in CI/CD, you need to set up the following environment variables as GitHub Secrets:
+
+1. Go to your GitHub repository
+2. Navigate to Settings > Secrets and variables > Actions
+3. Add the following secrets:
+
+| Secret Name | Description |
+|-------------|-------------|
+| `BASE_URL` | URL of your application (e.g., http://localhost:4200) |
+| `TEST_USER_EMAIL` | Test user email for form submissions |
+| `TEST_USER_PASSWORD` | Test user password |
+| `TEST_DELETE_EMAIL` | Email to use in deletion tests |
+| `TEST_EDIT_EMAIL` | Email to use in edit tests |
+| `TEST_AGE_FILTERS` | Comma-separated list of age values for filtering tests |
+| `API_KEY` | API key for authentication tests |
+
+### Workflow Details
+
+The GitHub Actions workflow:
+- Runs on Ubuntu latest
+- Sets up Node.js environment
+- Installs dependencies
+- Installs Playwright browsers
+- Creates .env file from GitHub Secrets
+- Runs the tests
+- Uploads test reports as artifacts
+
+You can manually trigger the workflow from the Actions tab in your GitHub repository.
+
 ## 🤝 Contributing
 
 1. Fork the repository
