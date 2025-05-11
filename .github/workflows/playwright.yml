@@ -35,9 +35,14 @@ jobs:
           echo "TEST_DELETE_EMAIL=${{ secrets.TEST_DELETE_EMAIL }}" >> .env
           echo "TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}" >> .env
           echo "TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}" >> .env
+    
+      - name: Start web server
+        run: |
+          npm run start:ci &
+          npx wait-on http://localhost:4200 --timeout 180000
 
       - name: Run Playwright tests (Chromium only)
-        run: npx playwright test --project=chromium
+        run: npx playwright test --project=chromium --config playwright.ci.config.ts
         
       - name: Upload test results
         if: always()
