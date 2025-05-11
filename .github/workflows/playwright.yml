@@ -35,7 +35,6 @@ jobs:
           echo "TEST_DELETE_EMAIL=${{ secrets.TEST_DELETE_EMAIL }}" >> .env
           echo "TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}" >> .env
           echo "TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}" >> .env
-          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
         
       - name: Run Playwright tests
         run: npx playwright test
