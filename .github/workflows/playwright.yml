@@ -41,8 +41,7 @@ jobs:
           
       - name: Start web server
         run: npm run start & npx wait-on http://localhost:4200
-          echo "Web server started"
-          
+
       - name: Run Playwright tests
         run: npx playwright test
         
