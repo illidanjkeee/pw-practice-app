@@ -18,7 +18,6 @@ export const getEnv = (key: string, required = true): string => {
 // Export environment variables without exposing default values
 export const env = {
   baseUrl: getEnv("BASE_URL"),
-  apiKey: getEnv("API_KEY"),
   testUser: {
     email: getEnv("TEST_USER_EMAIL"),
     password: getEnv("TEST_USER_PASSWORD"),

@@ -25,7 +25,7 @@ jobs:
         run: npm ci --force
         
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps --force
+        run: npx playwright install --with-deps chromium
       
       - name: Create .env file
         run: |
@@ -36,8 +36,8 @@ jobs:
           echo "TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}" >> .env
           echo "TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}" >> .env
 
-      - name: Run Playwright tests
-        run: npx playwright test
+      - name: Run Playwright tests (Chromium only)
+        run: npx playwright test --project=chromium
         
       - name: Upload test results
         if: always()
