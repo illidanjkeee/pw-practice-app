@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
@@ -25,7 +25,7 @@ jobs:
         run: npm ci --force
         
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps --force
       
       - name: Create .env file
         run: |
@@ -40,12 +40,8 @@ jobs:
         run: npm install -g wait-on
           
       - name: Start web server
-        run: npm run start &
-        
-      - name: Wait for web server to be ready
-        run: |
-          echo "Waiting for web server to be ready..."
-          npx wait-on http://localhost:4200 --timeout 60000
+        run: npm run start & npx wait-on http://localhost:4200
+          echo "Web server started"
           
       - name: Run Playwright tests
         run: npx playwright test
