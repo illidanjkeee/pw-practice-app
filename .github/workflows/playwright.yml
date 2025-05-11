@@ -26,16 +26,27 @@ jobs:
         
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-        
+      
       - name: Create .env file
         run: |
-          echo "BASE_URL=${{ secrets.BASE_URL }}" > .env
+          echo "BASE_URL=${{ secrets.BASE_URL || 'http://localhost:4200' }}" > .env
           echo "TEST_USER_EMAIL=${{ secrets.TEST_USER_EMAIL }}" >> .env
           echo "TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}" >> .env
           echo "TEST_DELETE_EMAIL=${{ secrets.TEST_DELETE_EMAIL }}" >> .env
           echo "TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}" >> .env
           echo "TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}" >> .env
+          
+      - name: Install wait-on package
+        run: npm install -g wait-on
+          
+      - name: Start web server
+        run: npm run start &
         
+      - name: Wait for web server to be ready
+        run: |
+          echo "Waiting for web server to be ready..."
+          npx wait-on http://localhost:4200 --timeout 60000
+          
       - name: Run Playwright tests
         run: npx playwright test
         
