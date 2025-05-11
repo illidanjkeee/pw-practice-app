@@ -2,8 +2,9 @@ import { test as base } from "@playwright/test";
 import { NavigationPage } from "../page-objects/navigationPage";
 import { FormLayoutsPage } from "../page-objects/formLayoutsPage";
 import { DatepickerPage } from "../page-objects/datepickerPage";
-import { ModalOverlaysPage } from "../page-objects/modalOverlaysPage";
+import { DialogPage } from "../page-objects/dialogPage";
 import { BasePage } from "../page-objects/basePage";
+import { WindowPage } from "../page-objects/windowPage";
 
 // a class that will hold all page objects
 export class Pages {
@@ -11,14 +12,16 @@ export class Pages {
   readonly navigationPage: NavigationPage;
   readonly formLayoutsPage: FormLayoutsPage;
   readonly datepickerPage: DatepickerPage;
-  readonly modalOverlaysPage: ModalOverlaysPage;
+  readonly dialogPage: DialogPage;
+  readonly windowPage: WindowPage;
 
   constructor(page) {
     this.basePage = new BasePage(page);
     this.navigationPage = new NavigationPage(page);
     this.formLayoutsPage = new FormLayoutsPage(page);
     this.datepickerPage = new DatepickerPage(page);
-    this.modalOverlaysPage = new ModalOverlaysPage(page);
+    this.dialogPage = new DialogPage(page);
+    this.windowPage = new WindowPage(page);
   }
 }
 
@@ -30,7 +33,8 @@ export type MainFixtures = {
   navigationPage: NavigationPage;
   formLayoutsPage: FormLayoutsPage;
   datepickerPage: DatepickerPage;
-  modalOverlaysPage: ModalOverlaysPage;
+  dialogPage: DialogPage;
+  windowPage: WindowPage;
 };
 
 // Create a test object with the new fixtures
@@ -57,8 +61,12 @@ export const test = base.extend<MainFixtures>({
     await use(pages.datepickerPage);
   },
 
-  modalOverlaysPage: async ({ pages }, use) => {
-    await use(pages.modalOverlaysPage);
+  dialogPage: async ({ pages }, use) => {
+    await use(pages.dialogPage);
+  },
+
+  windowPage: async ({ pages }, use) => {
+    await use(pages.windowPage);
   },
 });
 

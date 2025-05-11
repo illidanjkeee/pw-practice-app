@@ -9,7 +9,7 @@ import { BasePage } from "./basePage";
  *
  * @extends BasePage
  */
-export class ModalOverlaysPage extends BasePage {
+export class DialogPage extends BasePage {
   // Dialog buttons
   readonly openDialogWithComponentButton: Locator;
   readonly openDialogWithTemplateButton: Locator;

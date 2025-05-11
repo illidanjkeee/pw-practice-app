@@ -12,8 +12,11 @@ export class NavigationPage extends BasePage {
 
   private readonly menuGroups = {
     Forms: ["Form Layouts", "Datepicker"],
-    "Modal & Overlays": ["Toastr", "Tooltip", "Dialog"],
-    "Tables & Data": ["Smart Table"],
+    "Modal & Overlays": ["Dialog", "Window", "Popover", "Toastr", "Tooltip"],
+    "Extra Components": ["Calendar"],
+    Charts: ["Echarts"],
+    "Tables & Data": ["Smart Table", "Tree Grid"],
+    Auth: ["Login", "Register", "Request Password", "Reset Password"],
     Home: ["/"],
   };
 
@@ -70,6 +73,22 @@ export class NavigationPage extends BasePage {
 
   async dialogPage(): Promise<void> {
     await this.navigateToMenuItem("Dialog");
+  }
+
+  async windowPage(): Promise<void> {
+    await this.navigateToMenuItem("Window");
+  }
+
+  async popover(): Promise<void> {
+    await this.navigateToMenuItem("Popover");
+  }
+
+  async toastr(): Promise<void> {
+    await this.navigateToMenuItem("Toastr");
+  }
+
+  async tooltip(): Promise<void> {
+    await this.navigateToMenuItem("Tooltip");
   }
 
   private async selectGroupMenuItem(groupItemTitle: string): Promise<void> {
