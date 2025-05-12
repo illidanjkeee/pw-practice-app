@@ -27,8 +27,5 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
-    // Other browser configurations removed for CI
   ],
-
-  // No webServer configuration here - we're starting it manually in the workflow
 });
