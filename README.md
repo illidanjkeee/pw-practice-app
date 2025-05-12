@@ -212,7 +212,6 @@ For the tests to run correctly in CI/CD, you need to set up the following enviro
 | `TEST_DELETE_EMAIL` | Email to use in deletion tests |
 | `TEST_EDIT_EMAIL` | Email to use in edit tests |
 | `TEST_AGE_FILTERS` | Comma-separated list of age values for filtering tests |
-| `API_KEY` | API key for authentication tests |
 
 ### Workflow Details
 
