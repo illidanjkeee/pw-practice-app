@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures/baseFixture";
 
-test.describe("Modal Window Tests", () => {
+test.describe("Modal & Overlays, Window Tests", () => {
   test.beforeEach(async ({ basePage, navigationPage }) => {
     await basePage.navigateToHome();
     await navigationPage.windowPage();
@@ -89,5 +89,56 @@ test.describe("Modal Window Tests", () => {
       await expect(windowPage.openWindowFormCard).toBeHidden();
     });
   });
-  // TODO: Add new tests for the new window forms
+
+  test("should open window form and close with escape key", async ({
+    windowPage,
+  }) => {
+    await test.step("Open window form", async () => {
+      await windowPage.openWindowForm();
+      expect(await windowPage.waitForWindowToAppear());
+    });
+    await test.step("Close window form with escape key", async () => {
+      await windowPage.closeWindowWithEscape();
+      await expect(windowPage.openWindowFormCard).toBeHidden();
+    });
+  });
+
+  test("should open window with template and close with escape key", async ({
+    windowPage,
+  }) => {
+    await test.step("Open window with template", async () => {
+      await windowPage.openWindowWithTemplate();
+      expect(await windowPage.waitForWindowToAppear());
+    });
+    await test.step("Close window with template with escape key", async () => {
+      await windowPage.closeWindowWithEscape();
+      await expect(windowPage.openWindowFormCard).toBeHidden();
+    });
+  });
+
+  test("should open window with backdrop and close with escape key", async ({
+    windowPage,
+  }) => {
+    await test.step("Open window with backdrop", async () => {
+      await windowPage.openWindowWithBackdrop();
+      expect(await windowPage.waitForWindowToAppear());
+    });
+    await test.step("Close window with backdrop with escape key", async () => {
+      await windowPage.closeWindowWithEscape();
+      await expect(windowPage.openWindowFormCard).toBeHidden();
+    });
+  });
+
+  test("should open window without backdrop and NOT close with escape key", async ({
+    windowPage,
+  }) => {
+    await test.step("Open window without backdrop", async () => {
+      await windowPage.openWindowWithoutBackdrop();
+      expect(await windowPage.waitForWindowToAppear());
+    });
+    await test.step("Close window without backdrop with escape key", async () => {
+      await windowPage.closeWindowWithEscape();
+      await expect(windowPage.withoutBackdropWindowBody).toBeVisible();
+    });
+  });
 });

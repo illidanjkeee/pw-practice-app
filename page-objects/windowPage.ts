@@ -94,4 +94,8 @@ export class WindowPage extends BasePage {
   async openWindowWithoutBackdrop() {
     await this.openWindowWithoutBackdropButton.click();
   }
+
+  async closeWindowWithEscape() {
+    await this.page.keyboard.press("Escape");
+  }
 }

@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures/baseFixture";
 import { env } from "../utils/environment";
 import { testForms } from "../testData/navigationData";
 
-test.describe("Form Layouts Page Tests", () => {
+test.describe("Forms, Form Layouts Page Tests", () => {
   // Common setup for all tests
   test.beforeEach(async ({ basePage, navigationPage }) => {
     await basePage.navigateToHome();

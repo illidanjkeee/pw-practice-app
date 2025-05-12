@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures/baseFixture";
 
-test.describe("Toastr Page Tests", () => {
+test.describe("Modal & Overlays, Toastr Page Tests", () => {
   // Common setup for all tests
   test.beforeEach(async ({ basePage, navigationPage }) => {
     await basePage.navigateToHome();

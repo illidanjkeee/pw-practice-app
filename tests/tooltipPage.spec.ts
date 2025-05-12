@@ -1,7 +1,6 @@
 import { test, expect } from "../fixtures/baseFixture";
 
-test.describe("Tooltips Page Tests", () => {
-  // Common setup for all tests
+test.describe("Modal & Overlays,Tooltip Page Tests", () => {
   test.beforeEach(async ({ basePage, navigationPage }) => {
     await basePage.navigateToHome();
     await navigationPage.tooltipPage();

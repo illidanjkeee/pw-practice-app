@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures/baseFixture";
 import { env } from "../utils/environment";
 
-test.describe("Smart Table Page Tests", () => {
+test.describe("Tables & Data, Smart Table Page Tests", () => {
   // Common setup for all tests
   test.beforeEach(async ({ basePage, navigationPage }) => {
     await basePage.navigateToHome();

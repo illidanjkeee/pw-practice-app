@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures/baseFixture";
 
-test.describe("Modal Dialog Tests", () => {
+test.describe("Modal & Overlays, Dialog Tests", () => {
   test.beforeEach(async ({ pages }) => {
     await test.step("Navigate to the dialog page", async () => {
       await pages.basePage.navigateToHome();
