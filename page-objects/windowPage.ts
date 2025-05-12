@@ -1,6 +1,5 @@
 import { Page, Locator } from "@playwright/test";
 import { BasePage } from "./basePage";
-import { CoreModule } from "../src/app/@core/core.module";
 
 /**
  * Represents a page object for Window page.
