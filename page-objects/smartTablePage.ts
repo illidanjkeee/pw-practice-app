@@ -2,10 +2,20 @@ import { Locator, Page, expect } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 export class SmartTablePage extends BasePage {
+  // Table structure locators
   readonly table: Locator;
   readonly tableBody: Locator;
   readonly ageFilter: Locator;
   readonly paginationNav: Locator;
+
+  // Row action locators
+  readonly deleteButton: Locator;
+  readonly editButton: Locator;
+  readonly confirmEditButton: Locator;
+
+  // Editor locators
+  readonly ageEditor: Locator;
+  readonly emailEditor: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -13,37 +23,40 @@ export class SmartTablePage extends BasePage {
     this.tableBody = page.locator("tbody");
     this.ageFilter = page.locator("input-filter").getByPlaceholder("Age");
     this.paginationNav = page.locator(".ng2-smart-pagination-nav");
+
+    this.deleteButton = page.locator(".nb-trash");
+    this.editButton = page.locator(".nb-edit");
+    this.confirmEditButton = page.locator(".nb-checkmark");
+
+    this.ageEditor = page.locator("input-editor").getByPlaceholder("Age");
+    this.emailEditor = page.locator("input-editor").getByPlaceholder("E-mail");
   }
 
   /**
    * Delete a row by email and confirm the deletion
    * @param email Email to identify row to delete
-   */
-  async deleteRow(email: string): Promise<void> {
-    const targetRow = this.table.locator("tr", { hasText: email });
-    await targetRow.locator(".nb-trash").click();
+   */ async deleteRow(email: string): Promise<void> {
+    const targetRow = this.getRowByEmail(email);
+    await targetRow.locator(this.deleteButton).click();
   }
 
   /**
    * Verify a row with specific email does not exist
    * @param email Email to check for non-existence
-   */
-  async verifyRowDeleted(email: string): Promise<void> {
-    await expect(this.page.locator("table tr").first()).not.toHaveText(email);
+   */ async verifyRowDeleted(email: string): Promise<void> {
+    await expect(this.table.locator("tr").first()).not.toHaveText(email);
   }
 
   /**
    * Edit age in a row identified by email
    * @param email Email to identify row
    * @param newAge New age value
-   */
-  async editAge(email: string, newAge: string): Promise<void> {
-    const row = this.table.locator("tr", { hasText: email }).first();
-    await row.locator(".nb-edit").click();
-    const editor = this.page.locator("input-editor").getByPlaceholder("Age");
-    await editor.clear();
-    await editor.fill(newAge);
-    await this.page.locator(".nb-checkmark").click();
+   */ async editAge(email: string, newAge: string): Promise<void> {
+    const row = this.getRowByEmail(email).first();
+    await row.locator(this.editButton).click();
+    await this.ageEditor.clear();
+    await this.ageEditor.fill(newAge);
+    await this.confirmEditButton.click();
   }
 
   /**
@@ -58,17 +71,12 @@ export class SmartTablePage extends BasePage {
    * Edit email for a row identified by ID
    * @param id ID to identify row
    * @param newEmail New email value
-   */
-  async editEmailById(id: string, newEmail: string): Promise<void> {
-    const row = this.page
-      .getByRole("row", { name: id })
-      .filter({ has: this.page.locator("td").nth(1).getByText(id) });
-
-    await row.locator(".nb-edit").click();
-    const editor = this.page.locator("input-editor").getByPlaceholder("E-mail");
-    await editor.clear();
-    await editor.fill(newEmail);
-    await this.page.locator(".nb-checkmark").click();
+   */ async editEmailById(id: string, newEmail: string): Promise<void> {
+    const row = this.getRowById(id);
+    await row.locator(this.editButton).click();
+    await this.emailEditor.clear();
+    await this.emailEditor.fill(newEmail);
+    await this.confirmEditButton.click();
   }
 
   /**
@@ -77,9 +85,7 @@ export class SmartTablePage extends BasePage {
    * @param expectedEmail Expected email value
    */
   async verifyEmailById(id: string, expectedEmail: string): Promise<void> {
-    const row = this.page
-      .getByRole("row", { name: id })
-      .filter({ has: this.page.locator("td").nth(1).getByText(id) });
+    const row = this.getRowById(id);
     await expect(row.locator("td").nth(5)).toHaveText(expectedEmail);
   }
 
@@ -96,8 +102,7 @@ export class SmartTablePage extends BasePage {
   /**
    * Verify that all rows match the filtered age
    * @param age Age value to verify
-   */
-  async verifyAgeFilter(age: string): Promise<void> {
+   */ async verifyAgeFilter(age: string): Promise<void> {
     const rows = this.tableBody.locator("tr");
 
     if (age === "200") {
@@ -111,5 +116,17 @@ export class SmartTablePage extends BasePage {
         await expect(rowAge).toHaveText(age);
       }
     }
+  }
+
+  // Get a specific row by email text
+  getRowByEmail(email: string): Locator {
+    return this.table.locator("tr", { hasText: email });
+  }
+
+  // Get a specific row by ID
+  getRowById(id: string): Locator {
+    return this.page
+      .getByRole("row", { name: id })
+      .filter({ has: this.page.locator("td").nth(1).getByText(id) });
   }
 }
