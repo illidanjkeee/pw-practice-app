@@ -5,68 +5,47 @@ import { DatepickerPage } from "../page-objects/datepickerPage";
 import { DialogPage } from "../page-objects/dialogPage";
 import { BasePage } from "../page-objects/basePage";
 import { WindowPage } from "../page-objects/windowPage";
-
-// a class that will hold all page objects
-export class Pages {
-  readonly basePage: BasePage;
-  readonly navigationPage: NavigationPage;
-  readonly formLayoutsPage: FormLayoutsPage;
-  readonly datepickerPage: DatepickerPage;
-  readonly dialogPage: DialogPage;
-  readonly windowPage: WindowPage;
-
-  constructor(page) {
-    this.basePage = new BasePage(page);
-    this.navigationPage = new NavigationPage(page);
-    this.formLayoutsPage = new FormLayoutsPage(page);
-    this.datepickerPage = new DatepickerPage(page);
-    this.dialogPage = new DialogPage(page);
-    this.windowPage = new WindowPage(page);
-  }
-}
+import { SmartTablePage } from "../page-objects/smartTablePage";
 
 // Define fixture types
 export type MainFixtures = {
-  pages: Pages;
-  // Keep individual fixtures for backward compatibility if needed
   basePage: BasePage;
   navigationPage: NavigationPage;
   formLayoutsPage: FormLayoutsPage;
   datepickerPage: DatepickerPage;
   dialogPage: DialogPage;
   windowPage: WindowPage;
+  smartTablePage: SmartTablePage;
 };
 
-// Create a test object with the new fixtures
+// Create a test object with independent fixtures
 export const test = base.extend<MainFixtures>({
-  // Create a single fixture that contains all page objects
-  pages: async ({ page }, use) => {
-    const pages = new Pages(page);
-    await use(pages);
+  basePage: async ({ page }, use) => {
+    await use(new BasePage(page));
   },
 
-  basePage: async ({ pages }, use) => {
-    await use(pages.basePage);
+  navigationPage: async ({ page }, use) => {
+    await use(new NavigationPage(page));
   },
 
-  navigationPage: async ({ pages }, use) => {
-    await use(pages.navigationPage);
+  formLayoutsPage: async ({ page }, use) => {
+    await use(new FormLayoutsPage(page));
   },
 
-  formLayoutsPage: async ({ pages }, use) => {
-    await use(pages.formLayoutsPage);
+  datepickerPage: async ({ page }, use) => {
+    await use(new DatepickerPage(page));
   },
 
-  datepickerPage: async ({ pages }, use) => {
-    await use(pages.datepickerPage);
+  dialogPage: async ({ page }, use) => {
+    await use(new DialogPage(page));
   },
 
-  dialogPage: async ({ pages }, use) => {
-    await use(pages.dialogPage);
+  windowPage: async ({ page }, use) => {
+    await use(new WindowPage(page));
   },
 
-  windowPage: async ({ pages }, use) => {
-    await use(pages.windowPage);
+  smartTablePage: async ({ page }, use) => {
+    await use(new SmartTablePage(page));
   },
 });
 

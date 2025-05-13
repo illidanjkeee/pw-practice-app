@@ -1,10 +1,10 @@
 import { test, expect } from "../fixtures/baseFixture";
 
 test.describe("Modal & Overlays, Dialog Tests", () => {
-  test.beforeEach(async ({ pages }) => {
+  test.beforeEach(async ({ navigationPage, basePage }) => {
     await test.step("Navigate to the dialog page", async () => {
-      await pages.basePage.navigateToHome();
-      await pages.navigationPage.dialogPage();
+      await basePage.navigateToHome();
+      await navigationPage.dialogPage();
     });
   });
 
