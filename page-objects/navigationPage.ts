@@ -9,6 +9,7 @@ export class NavigationPage extends BasePage {
   readonly smartTableMenuItem: Locator;
   readonly tooltipMenuItem: Locator;
   readonly dialogMenuItem: Locator;
+  readonly IoTDashboardMenuItem: Locator;
 
   private readonly menuGroups = {
     Forms: ["Form Layouts", "Datepicker"],
@@ -18,6 +19,7 @@ export class NavigationPage extends BasePage {
     "Tables & Data": ["Smart Table", "Tree Grid"],
     Auth: ["Login", "Register", "Request Password", "Reset Password"],
     Home: ["/"],
+    "IoT Dashboard": ["IoT Dashboard"],
   };
 
   private groupMenuItemCache: Map<string, Locator> = new Map();
@@ -30,6 +32,7 @@ export class NavigationPage extends BasePage {
     this.smartTableMenuItem = this.page.locator("text=Smart Table");
     this.tooltipMenuItem = this.page.locator("text=Tooltip");
     this.dialogMenuItem = this.page.locator("text=Dialog");
+    this.IoTDashboardMenuItem = this.page.locator("text=IoT Dashboard");
   }
 
   async navigateToMenuItem(menuItemText: string): Promise<void> {
@@ -77,6 +80,10 @@ export class NavigationPage extends BasePage {
 
   async windowPage(): Promise<void> {
     await this.navigateToMenuItem("Window");
+  }
+
+  async IoTDashboardPage(): Promise<void> {
+    await this.navigateToMenuItem("IoT Dashboard");
   }
 
   async popover(): Promise<void> {

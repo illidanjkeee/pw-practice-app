@@ -1,4 +1,4 @@
-import { test } from "../fixtures/baseFixture";
+import { test } from "../../fixtures/baseFixture";
 
 test.describe("Forms, Datepicker Page Tests", () => {
   // Common setup for all tests

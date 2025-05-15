@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/baseFixture";
+import { test, expect } from "../../fixtures/baseFixture";
 
 test.describe("Modal & Overlays,Tooltip Page Tests", () => {
   test.beforeEach(async ({ basePage, navigationPage }) => {

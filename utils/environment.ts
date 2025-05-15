@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv";
 
-// Load environment variables from .env file
 dotenv.config();
 
 /**
@@ -15,7 +14,6 @@ export const getEnv = (key: string, required = true): string => {
   return value || "";
 };
 
-// Export environment variables without exposing default values
 export const env = {
   baseUrl: getEnv("BASE_URL"),
   testUser: {

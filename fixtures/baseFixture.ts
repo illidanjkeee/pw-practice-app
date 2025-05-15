@@ -6,6 +6,7 @@ import { DialogPage } from "../page-objects/dialogPage";
 import { BasePage } from "../page-objects/basePage";
 import { WindowPage } from "../page-objects/windowPage";
 import { SmartTablePage } from "../page-objects/smartTablePage";
+import { IoTDashboardPage } from "../page-objects/IoTDashboardPage";
 
 // Define fixture types
 export type MainFixtures = {
@@ -16,6 +17,7 @@ export type MainFixtures = {
   dialogPage: DialogPage;
   windowPage: WindowPage;
   smartTablePage: SmartTablePage;
+  IoTDashboardPage: IoTDashboardPage;
 };
 
 // Create a test object with independent fixtures
@@ -46,6 +48,10 @@ export const test = base.extend<MainFixtures>({
 
   smartTablePage: async ({ page }, use) => {
     await use(new SmartTablePage(page));
+  },
+
+  IoTDashboardPage: async ({ page }, use) => {
+    await use(new IoTDashboardPage(page));
   },
 });
 

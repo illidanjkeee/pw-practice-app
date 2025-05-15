@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures/baseFixture";
-import { navigationPages } from "../testData/navigationData";
+import { test, expect } from "../../fixtures/baseFixture";
+import { navigationPages } from "../../testData/navigationData";
 
 test.describe("Navigation Tests", () => {
   navigationPages.forEach((navPage) => {

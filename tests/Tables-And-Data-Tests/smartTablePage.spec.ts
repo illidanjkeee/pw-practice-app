@@ -1,5 +1,5 @@
-import { test, expect } from "../fixtures/baseFixture";
-import { env } from "../utils/environment";
+import { test, expect } from "../../fixtures/baseFixture";
+import { env } from "../../utils/environment";
 
 test.describe("Tables & Data, Smart Table Page Tests", () => {
   test.beforeEach(async ({ basePage, navigationPage }) => {
