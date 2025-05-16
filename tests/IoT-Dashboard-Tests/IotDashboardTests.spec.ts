@@ -54,4 +54,5 @@ test.describe("IoT Dashboard Tests, Roller Shades Functionality", () => {
       expect(isRollerShadesOn).toBe(true);
     });
   });
+  // TODO: add more tests
 });
