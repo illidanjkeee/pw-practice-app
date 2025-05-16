@@ -5,28 +5,28 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-  workflow_dispatch:  # Allows manual trigger of the workflow
+  workflow_dispatch: # Allows manual trigger of the workflow
 
 jobs:
   test:
-    name: 'Playwright Tests'
+    name: "Playwright Tests"
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci --force
-        
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
-      
+
       - name: Create .env file
         run: |
           echo "BASE_URL=${{ secrets.BASE_URL || 'http://localhost:4200' }}" > .env
@@ -35,15 +35,15 @@ jobs:
           echo "TEST_DELETE_EMAIL=${{ secrets.TEST_DELETE_EMAIL }}" >> .env
           echo "TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}" >> .env
           echo "TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}" >> .env
-    
+
       - name: Start web server
         run: |
           npm run start:ci &
-          npx wait-on http://localhost:4200 --timeout 180000
+          npx wait-on http://localhost:4200 --timeout 90000
 
       - name: Run Playwright tests (Chromium only)
         run: npx playwright test --project=chromium --config playwright.ci.config.ts
-        
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
