@@ -15,7 +15,7 @@ export class IoTDashboardPage extends BasePage {
     super(page);
     // Light status card elements
     this.lightTitle = page.locator(
-      "ngx-status-card[ng-reflect-title='Light'] div[class='title h5']",
+      "//ngx-status-card[.//div[@class='title h5' and text()='Light']]",
     );
     this.lightToggleButton = page.locator(".nb-lightbulb");
     this.lightStatus = page.locator(
@@ -23,7 +23,7 @@ export class IoTDashboardPage extends BasePage {
     );
     // Roller Shades card elements
     this.rollerShadesTitle = page.locator(
-      "ngx-status-card[ng-reflect-title='Roller Shades'] div[class='title h5']",
+      "//ngx-status-card[.//div[@class='title h5' and text()='Roller Shades']]",
     );
     this.rollerShadesToggleButton = page.locator(".nb-roller-shades");
     this.rollerShadesStatus = page.locator(
