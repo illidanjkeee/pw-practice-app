@@ -49,10 +49,54 @@ test.describe("IoT Dashboard Tests, Roller Shades Functionality", () => {
   test("should verify the roller shades status", async ({
     IoTDashboardPage,
   }) => {
-    await test.step("Check if the roller shades are toggled on by default", async () => {
-      const isRollerShadesOn = await IoTDashboardPage.isRollerShadesToggledOn();
-      expect(isRollerShadesOn).toBe(true);
+    await test.step("Check the roller shades status", async () => {
+      const rollerShadesStatusText = IoTDashboardPage.rollerShadesStatus;
+      await expect(rollerShadesStatusText).toHaveText(
+        rollerShadesStatusText ? "ON" : "OFF",
+      );
     });
   });
-  // TODO: add more tests
+
+  test("should verify the roller shades functionality title", async ({
+    IoTDashboardPage,
+  }) => {
+    await test.step("Check if the roller shades functionality title is correct", async () => {
+      const rollerShadesTitle = IoTDashboardPage.rollerShadesTitle;
+      await expect(rollerShadesTitle).toHaveText("Roller Shades");
+    });
+  });
+});
+test.describe("IoT Dasboard Tests, Wireless Audio Functionality", () => {
+  test.beforeEach(async ({ basePage }) => {
+    await basePage.navigateToHome();
+  });
+
+  test("should verify the wireless audio functionality title", async ({
+    IoTDashboardPage,
+  }) => {
+    await test.step("Check if the wireless audio functionality title is correct", async () => {
+      const wirelessAudioTitle = IoTDashboardPage.wirelessAudioTitle;
+      await expect(wirelessAudioTitle).toHaveText("Wireless Audio");
+    });
+  });
+  test("should verify the wireless audio status", async ({
+    IoTDashboardPage,
+  }) => {
+    await test.step("Check the wireless audio status", async () => {
+      const wirelessAudioStatusText = IoTDashboardPage.wirelessAudioStatus;
+      await expect(wirelessAudioStatusText).toHaveText(
+        wirelessAudioStatusText ? "ON" : "OFF",
+      );
+    });
+  });
+  test("should toggle the wireless audio on and off", async ({
+    IoTDashboardPage,
+  }) => {
+    await test.step("Toggle the wireless audio off", async () => {
+      await IoTDashboardPage.switchTheWirelessAudio();
+    });
+    await test.step("Toggle the wireless audio on", async () => {
+      await IoTDashboardPage.switchTheWirelessAudio();
+    });
+  });
 });
