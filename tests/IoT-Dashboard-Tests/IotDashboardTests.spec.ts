@@ -30,6 +30,7 @@ test.describe("IoT Dashboard Tests, Light Functionality", () => {
     });
   });
 });
+
 test.describe("IoT Dashboard Tests, Roller Shades Functionality", () => {
   test.beforeEach(async ({ basePage }) => {
     await basePage.navigateToHome();
@@ -66,6 +67,7 @@ test.describe("IoT Dashboard Tests, Roller Shades Functionality", () => {
     });
   });
 });
+
 test.describe("IoT Dasboard Tests, Wireless Audio Functionality", () => {
   test.beforeEach(async ({ basePage }) => {
     await basePage.navigateToHome();
@@ -79,6 +81,7 @@ test.describe("IoT Dasboard Tests, Wireless Audio Functionality", () => {
       await expect(wirelessAudioTitle).toHaveText("Wireless Audio");
     });
   });
+
   test("should verify the wireless audio status", async ({
     IoTDashboardPage,
   }) => {
@@ -89,6 +92,7 @@ test.describe("IoT Dasboard Tests, Wireless Audio Functionality", () => {
       );
     });
   });
+
   test("should toggle the wireless audio on and off", async ({
     IoTDashboardPage,
   }) => {
@@ -97,6 +101,42 @@ test.describe("IoT Dasboard Tests, Wireless Audio Functionality", () => {
     });
     await test.step("Toggle the wireless audio on", async () => {
       await IoTDashboardPage.switchTheWirelessAudio();
+    });
+  });
+});
+
+test.describe("IoT Dashboard Tests, Coffee Maker Functionality", () => {
+  test.beforeEach(async ({ basePage }) => {
+    await basePage.navigateToHome();
+  });
+  test("should verify the coffee maker functionality title", async ({
+    IoTDashboardPage,
+  }) => {
+    await test.step("Check if the coffee maker functionality title is correct", async () => {
+      const coffeeMakerTitle = IoTDashboardPage.coffeeMakerTitle;
+      await expect(coffeeMakerTitle).toHaveText("Coffee Maker");
+    });
+  });
+
+  test("should verify the coffee maker status", async ({
+    IoTDashboardPage,
+  }) => {
+    await test.step("Check the coffee maker status", async () => {
+      const coffeeMakerStatusText = IoTDashboardPage.coffeeMakerStatus;
+      await expect(coffeeMakerStatusText).toHaveText(
+        coffeeMakerStatusText ? "ON" : "OFF",
+      );
+    });
+  });
+
+  test("should toggle the coffee maker on and off", async ({
+    IoTDashboardPage,
+  }) => {
+    await test.step("Toggle the coffee maker off", async () => {
+      await IoTDashboardPage.switchTheCoffeeMaker();
+    });
+    await test.step("Toggle the coffee maker on", async () => {
+      await IoTDashboardPage.switchTheCoffeeMaker();
     });
   });
 });

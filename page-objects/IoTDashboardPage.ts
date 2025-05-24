@@ -14,7 +14,10 @@ export class IoTDashboardPage extends BasePage {
   readonly wirelessAudioTitle: Locator;
   readonly wirelessAudioToggleButton: Locator;
   readonly wirelessAudioStatus: Locator;
-
+  // Coffee Maker card elements
+  readonly coffeeMakerTitle: Locator;
+  readonly coffeeMakerToggleButton: Locator;
+  readonly coffeeMakerStatus: Locator;
   constructor(page: Page) {
     super(page);
     // Light status card elements
@@ -40,6 +43,14 @@ export class IoTDashboardPage extends BasePage {
     this.wirelessAudioToggleButton = page.locator(".nb-audio");
     this.wirelessAudioStatus = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Wireless Audio']]//div[@class='status paragraph-2']",
+    );
+    // Coffee Maker card elements
+    this.coffeeMakerTitle = page.locator(
+      "//ngx-status-card[.//div[@class='title h5' and text()='Coffee Maker']]//div[@class='title h5']",
+    );
+    this.coffeeMakerToggleButton = page.locator(".nb-coffee-maker");
+    this.coffeeMakerStatus = page.locator(
+      "//ngx-status-card[.//div[@class='title h5' and text()='Coffee Maker']]//div[@class='status paragraph-2']",
     );
   }
 
@@ -87,6 +98,23 @@ export class IoTDashboardPage extends BasePage {
     } else {
       await this.wirelessAudioToggleButton.click();
       await expect(this.wirelessAudioStatus).toHaveText("ON");
+    }
+  }
+
+  async isCoffeeMakerToggledOn(): Promise<boolean> {
+    await this.coffeeMakerToggleButton.waitFor({ state: "visible" });
+    const coffeeMakerStatusText =
+      (await this.coffeeMakerStatus.textContent()) || "";
+    return coffeeMakerStatusText === "ON";
+  }
+
+  async switchTheCoffeeMaker(): Promise<void> {
+    if (await this.isCoffeeMakerToggledOn()) {
+      await this.coffeeMakerToggleButton.click();
+      await expect(this.coffeeMakerStatus).toHaveText("OFF");
+    } else {
+      await this.coffeeMakerToggleButton.click();
+      await expect(this.coffeeMakerStatus).toHaveText("ON");
     }
   }
 }

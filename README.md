@@ -1,17 +1,17 @@
 # 🎭 Playwright Practice Application
 
-<div align="center">
+<p align="center">
   
   ![Playwright](https://img.shields.io/badge/Playwright-45ba4b?style=for-the-badge&logo=playwright&logoColor=white)
   ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
   ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
   ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
   
-  <h3>A playground for mastering UI automation with Playwright</h3>
+  <strong>A playground for mastering UI automation with Playwright</strong>
 
-  <p>This is a modified version of Ngx-Admin Angular application, specifically tailored for practicing Playwright test automation with real-world scenarios.</p>
+  <em>This is a modified version of Ngx-Admin Angular application, specifically tailored for practicing Playwright test automation with real-world scenarios.</em>
 
-</div>
+</p>
 
 ## 🚀 Features
 
@@ -82,32 +82,37 @@
 
 ## 🛠️ Prerequisites
 
-- Node.js 16 or higher
-- npm 7 or higher
+- Node.js 18 or higher
+- npm 8 or higher
 - Visual Studio Code (recommended)
 
 ## 📦 Setup Instructions
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/illidanjkeee/pw-practice-app.git
    cd pw-practice-app
    ```
 
 2. **Create environment file:**
+
    ```bash
    cp .env.example .env
    ```
 
 3. **Install dependencies:**
+
    ```bash
    npm install --force
    ```
 
 4. **Start the application:**
+
    ```bash
    npm start
    ```
+
    The application will be available at `http://localhost:4200`
 
 ## 🧪 Testing with Playwright
@@ -155,23 +160,41 @@ npx playwright show-report
 ```
 pw-practice-app/
 ├── tests/                  # Test specifications
-│   ├── formLayoutsPage.spec.ts
-│   ├── datepickerPage.spec.ts
-│   ├── dialogPage.spec.ts
-│   └── ...
+│   ├── Forms-Tests/        # Form-related test cases
+│   │   ├── formLayoutsPage.spec.ts
+│   │   ├── datepickerPage.spec.ts
+│   ├── Modal-And-Overlays-Tests/
+│   │   ├── dialogPage.spec.ts
+│   │   ├── windowPage.spec.ts
+│   │   ├── tooltipPage.spec.ts
+│   │   ├── toastrPage.spec.ts
+│   ├── Tables-And-Data-Tests/
+│   │   ├── smartTablePage.spec.ts
+│   ├── IoT-Dashboard-Tests/
+│   │   ├── IotDashboardTests.spec.ts
+│   │   ├── navigationTests.spec.ts
+│   │   ├── themeSelection.spec.ts
 │
 ├── page-objects/           # Page Object Models
 │   ├── basePage.ts         # Base page with common methods
 │   ├── formLayoutsPage.ts  # Form layouts page object
 │   ├── navigationPage.ts   # Navigation component object
-│   └── ...
+│   ├── datepickerPage.ts   # Datepicker page object
+│   ├── dialogPage.ts       # Dialog page object
+│   ├── IoTDashboardPage.ts # IoT Dashboard page object
+│   ├── smartTablePage.ts   # Smart Table page object
+│   ├── windowPage.ts       # Window page object
 │
 ├── fixtures/               # Test fixtures and data
+│   ├── baseFixture.ts      # Base fixture configuration
 ├── testData/               # Test data files
+│   ├── navigationData.ts   # Navigation test data
 ├── utils/                  # Helper utilities
 │
 ├── playwright.config.ts    # Playwright configuration
-└── docker-compose.yaml     # Docker configuration
+├── playwright.ci.config.ts # CI-specific Playwright configuration
+├── docker-compose.yaml     # Docker configuration
+├── .github/workflows/      # GitHub Actions CI/CD workflows
 ```
 
 ## 🐳 Docker Support
@@ -181,7 +204,7 @@ pw-practice-app/
 docker-compose up --build
 
 # Run tests in container
-docker-compose run test
+docker-compose run playwright-test
 ```
 
 ## 🔄 CI/CD Integration
@@ -206,7 +229,7 @@ For the tests to run correctly in CI/CD, you need to set up the following enviro
 
 | Secret Name | Description |
 |-------------|-------------|
-| `BASE_URL` | URL of your application (e.g., http://localhost:4200) |
+| `BASE_URL` | URL of your application (e.g., <http://localhost:4200>) |
 | `TEST_USER_EMAIL` | Test user email for form submissions |
 | `TEST_USER_PASSWORD` | Test user password |
 | `TEST_DELETE_EMAIL` | Email to use in deletion tests |
@@ -216,15 +239,17 @@ For the tests to run correctly in CI/CD, you need to set up the following enviro
 ### Workflow Details
 
 The GitHub Actions workflow:
-- Runs on Ubuntu latest
-- Sets up Node.js environment
-- Installs dependencies
-- Installs Playwright browsers
-- Creates .env file from GitHub Secrets
-- Runs the tests
-- Uploads test reports as artifacts
 
-You can manually trigger the workflow from the Actions tab in your GitHub repository.
+- Runs on Ubuntu latest
+- Sets up Node.js 18 environment
+- Installs dependencies with `npm ci --force`
+- Installs Playwright browsers (Chromium only)
+- Creates .env file from GitHub Secrets
+- Starts the web server with `npm run start:ci`
+- Runs the tests using the Chromium project with the CI-specific configuration
+- Uploads test reports as artifacts (retained for 14 days)
+
+You can manually trigger the workflow from the Actions tab in your GitHub repository using the "workflow_dispatch" event.
 
 ## 🤝 Contributing
 
