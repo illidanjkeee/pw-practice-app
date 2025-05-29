@@ -134,6 +134,14 @@ jobs:
           path: blob-report/
           retention-days: 1
 
+      - name: Upload traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-${{ matrix.browser }}
+          path: test-results/**/trace.zip
+          retention-days: 14
+
       - name: Upload test videos
         if: failure()
         uses: actions/upload-artifact@v4

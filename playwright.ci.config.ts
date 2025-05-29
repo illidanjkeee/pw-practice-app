@@ -1,8 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 import * as dotenv from "dotenv";
 
-// Load environment variables
-dotenv.config();
+// Only load .env file if not in CI (for local development)
+if (!process.env.CI) {
+  dotenv.config();
+}
 
 export default defineConfig({
   testDir: "./tests",
@@ -19,6 +21,8 @@ export default defineConfig({
   use: {
     baseURL: process.env.BASE_URL,
     trace: "on-first-retry",
+    screenshot: "only-on-failure",
+    video: "retain-on-failure",
   },
 
   /* Configure projects for major browsers */
