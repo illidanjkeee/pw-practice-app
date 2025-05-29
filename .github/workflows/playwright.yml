@@ -28,7 +28,6 @@ on:
 
 env:
   NODE_VERSION: 18
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
 jobs:
   test:
@@ -58,25 +57,21 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
+      - name: Install dependencies
+        run: npm ci --force
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}-${{ matrix.browser }}
           restore-keys: |
+            ${{ runner.os }}-playwright-${{ matrix.browser }}-
             ${{ runner.os }}-playwright-
 
-      - name: Install dependencies
-        run: npm ci --force
-
       - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.browser }}
-
-      - name: Install system dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps ${{ matrix.browser }}
+        run: npx playwright install ${{ matrix.browser }} --with-deps
 
       - name: Validate environment variables
         run: |
@@ -98,9 +93,9 @@ jobs:
       - name: Run Playwright tests
         run: |
           if [ "${{ github.event.inputs.browser }}" = "all" ] || [ -z "${{ github.event.inputs.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=blob
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob
           elif [ "${{ github.event.inputs.browser }}" = "${{ matrix.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=blob
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob
           else
             echo "Skipping ${{ matrix.browser }} as it doesn't match selected browser"
             exit 0
@@ -114,6 +109,7 @@ jobs:
           TEST_AGE_FILTERS: ${{ secrets.TEST_AGE_FILTERS }}
           CI: true
           NODE_ENV: test
+          PLAYWRIGHT_HTML_REPORT: playwright-report-${{ matrix.browser }}
 
       - name: Stop web server
         if: always()
@@ -121,6 +117,14 @@ jobs:
           if [ ! -z "$SERVER_PID" ]; then
             kill $SERVER_PID || true
           fi
+
+      - name: Upload individual HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report-${{ matrix.browser }}
+          path: playwright-report-${{ matrix.browser }}/
+          retention-days: 14
 
       - name: Upload blob report
         if: always()
@@ -164,14 +168,20 @@ jobs:
           path: all-blob-reports
           merge-multiple: true
 
+      - name: Debug blob reports
+        run: |
+          echo "Checking all-blob-reports directory:"
+          find all-blob-reports -type f -name "*.zip" | head -10
+          ls -la all-blob-reports/
+
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter html ./all-blob-reports
 
-      - name: Upload HTML report
+      - name: Upload merged HTML report
         uses: actions/upload-artifact@v4
         with:
-          name: html-report--attempt-${{ github.run_attempt }}
-          path: playwright-report
+          name: merged-html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report/
           retention-days: 14
 
       - name: Comment PR with test results
@@ -183,7 +193,12 @@ jobs:
             
             Test run completed for commit \${{ github.sha }}
             
-            📊 [View HTML Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }})
+            📊 **Individual Reports:**
+            - [Chromium Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }}) (Download html-report-chromium)
+            - [Firefox Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }}) (Download html-report-firefox)
+            
+            📋 **Merged Report:**
+            - [Combined Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }}) (Download merged-html-report--attempt-\${{ github.run_attempt }})
             
             **Browsers tested:** Chromium, Firefox
             **Run attempt:** \${{ github.run_attempt }}
