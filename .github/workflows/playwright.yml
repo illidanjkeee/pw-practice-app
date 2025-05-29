@@ -5,49 +5,218 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-  workflow_dispatch: # Allows manual trigger of the workflow
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser to run tests on'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - chromium
+          - firefox
+          - webkit
+      environment:
+        description: 'Environment to test against'
+        required: false
+        default: 'local'
+        type: choice
+        options:
+          - local
+          - staging
+
+env:
+  NODE_VERSION: 18
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
 jobs:
   test:
-    name: "Playwright Tests"
+    name: "Tests (${{ matrix.browser }})"
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
+        include:
+          - browser: chromium
+            project: chromium
+          - browser: firefox
+            project: firefox
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install dependencies
-        run: npm ci --force
+        run: npm ci --prefer-offline --no-audit
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Install system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps ${{ matrix.browser }}
+
+      - name: Validate environment variables
+        run: |
+          if [ -z "${{ secrets.TEST_USER_EMAIL }}" ]; then
+            echo "::warning::TEST_USER_EMAIL secret is not set"
+          fi
+          if [ -z "${{ secrets.TEST_USER_PASSWORD }}" ]; then
+            echo "::warning::TEST_USER_PASSWORD secret is not set"
+          fi
 
       - name: Create .env file
         run: |
-          echo "BASE_URL=${{ secrets.BASE_URL || 'http://localhost:4200' }}" > .env
-          echo "TEST_USER_EMAIL=${{ secrets.TEST_USER_EMAIL }}" >> .env
-          echo "TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}" >> .env
-          echo "TEST_DELETE_EMAIL=${{ secrets.TEST_DELETE_EMAIL }}" >> .env
-          echo "TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}" >> .env
-          echo "TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}" >> .env
+          cat > .env << EOF
+          BASE_URL=${{ secrets.BASE_URL || 'http://localhost:4200' }}
+          TEST_USER_EMAIL=${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
+          TEST_DELETE_EMAIL=${{ secrets.TEST_DELETE_EMAIL }}
+          TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}
+          TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}
+          CI=true
+          NODE_ENV=test
+          EOF
 
       - name: Start web server
         run: |
           npm run start:ci &
-          npx wait-on http://localhost:4200 --timeout 90000
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          npx wait-on http://localhost:4200 --timeout 120000 --interval 1000
+          echo "::notice::Server started successfully on http://localhost:4200"
 
-      - name: Run Playwright tests (Chromium only)
-        run: npx playwright test --project=chromium --config playwright.ci.config.ts
+      - name: Run health check
+        run: |
+          curl -f http://localhost:4200 || (echo "::error::Health check failed" && exit 1)
+
+      - name: Run Playwright tests
+        run: |
+          if [ "${{ github.event.inputs.browser }}" = "all" ] || [ -z "${{ github.event.inputs.browser }}" ]; then
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts
+          elif [ "${{ github.event.inputs.browser }}" = "${{ matrix.browser }}" ]; then
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts
+          else
+            echo "Skipping ${{ matrix.browser }} as it doesn't match selected browser"
+            exit 0
+          fi
+        env:
+          PLAYWRIGHT_HTML_REPORT: playwright-report-${{ matrix.browser }}
+
+      - name: Stop web server
+        if: always()
+        run: |
+          if [ ! -z "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report-${{ matrix.browser }}/
+          retention-days: 30
+
+      - name: Upload test videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos-${{ matrix.browser }}
+          path: test-results/
+          retention-days: 7
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          if [ -f "test-results.json" ]; then
+            echo "## Test Results (${{ matrix.browser }})" >> $GITHUB_STEP_SUMMARY
+            echo "Browser: ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
+            echo "Results available in artifacts" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  merge-reports:
+    name: "Merge Reports"
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-report-*
+          merge-multiple: true
+          path: all-reports/
+
+      - name: Merge reports
+        run: |
+          npx playwright merge-reports all-reports/ --reporter=html,json
+        continue-on-error: true
+
+      - name: Upload merged report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-playwright-report
           path: playwright-report/
-          retention-days: 14
+          retention-days: 30
+
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('results.json')) {
+              const results = JSON.parse(fs.readFileSync('results.json', 'utf8'));
+              const comment = `## 🎭 Playwright Test Results
+              
+              - **Total Tests**: ${results.stats?.total || 'N/A'}
+              - **Passed**: ${results.stats?.passed || 'N/A'}
+              - **Failed**: ${results.stats?.failed || 'N/A'}
+              - **Skipped**: ${results.stats?.skipped || 'N/A'}
+              
+              View detailed results in the [test report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
