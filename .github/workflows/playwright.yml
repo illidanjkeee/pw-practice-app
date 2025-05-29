@@ -68,7 +68,7 @@ jobs:
             ${{ runner.os }}-playwright-
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --force
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
