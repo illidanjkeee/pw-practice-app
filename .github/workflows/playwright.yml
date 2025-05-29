@@ -87,19 +87,6 @@ jobs:
             echo "::warning::TEST_USER_PASSWORD secret is not set"
           fi
 
-      - name: Create .env file
-        run: |
-          cat > .env << EOF
-          BASE_URL=${{ secrets.BASE_URL || 'http://localhost:4200' }}
-          TEST_USER_EMAIL=${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
-          TEST_DELETE_EMAIL=${{ secrets.TEST_DELETE_EMAIL }}
-          TEST_EDIT_EMAIL=${{ secrets.TEST_EDIT_EMAIL }}
-          TEST_AGE_FILTERS=${{ secrets.TEST_AGE_FILTERS }}
-          CI=true
-          NODE_ENV=test
-          EOF
-
       - name: Start web server
         run: |
           npm run start:ci &
@@ -108,22 +95,25 @@ jobs:
           npx wait-on http://localhost:4200 --timeout 120000 --interval 1000
           echo "::notice::Server started successfully on http://localhost:4200"
 
-      - name: Run health check
-        run: |
-          curl -f http://localhost:4200 || (echo "::error::Health check failed" && exit 1)
-
       - name: Run Playwright tests
         run: |
           if [ "${{ github.event.inputs.browser }}" = "all" ] || [ -z "${{ github.event.inputs.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=blob
           elif [ "${{ github.event.inputs.browser }}" = "${{ matrix.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=blob
           else
             echo "Skipping ${{ matrix.browser }} as it doesn't match selected browser"
             exit 0
           fi
         env:
-          PLAYWRIGHT_HTML_REPORT: playwright-report-${{ matrix.browser }}
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:4200' }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          TEST_DELETE_EMAIL: ${{ secrets.TEST_DELETE_EMAIL }}
+          TEST_EDIT_EMAIL: ${{ secrets.TEST_EDIT_EMAIL }}
+          TEST_AGE_FILTERS: ${{ secrets.TEST_AGE_FILTERS }}
+          CI: true
+          NODE_ENV: test
 
       - name: Stop web server
         if: always()
@@ -132,13 +122,13 @@ jobs:
             kill $SERVER_PID || true
           fi
 
-      - name: Upload test results
+      - name: Upload blob report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.browser }}
-          path: playwright-report-${{ matrix.browser }}/
-          retention-days: 30
+          name: blob-report-${{ matrix.browser }}
+          path: blob-report/
+          retention-days: 1
 
       - name: Upload test videos
         if: failure()
@@ -147,15 +137,6 @@ jobs:
           name: test-videos-${{ matrix.browser }}
           path: test-results/
           retention-days: 7
-
-      - name: Generate test summary
-        if: always()
-        run: |
-          if [ -f "test-results.json" ]; then
-            echo "## Test Results (${{ matrix.browser }})" >> $GITHUB_STEP_SUMMARY
-            echo "Browser: ${{ matrix.browser }}" >> $GITHUB_STEP_SUMMARY
-            echo "Results available in artifacts" >> $GITHUB_STEP_SUMMARY
-          fi
 
   merge-reports:
     name: "Merge Reports"
@@ -176,47 +157,41 @@ jobs:
       - name: Install dependencies
         run: npm ci --force
 
-      - name: Download all reports
+      - name: Download blob reports
         uses: actions/download-artifact@v4
         with:
-          pattern: playwright-report-*
+          pattern: blob-report-*
+          path: all-blob-reports
           merge-multiple: true
-          path: all-reports/
 
-      - name: Merge reports
-        run: |
-          npx playwright merge-reports all-reports/ --reporter=html,json
-        continue-on-error: true
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
 
-      - name: Upload merged report
-        if: always()
+      - name: Upload HTML report
         uses: actions/upload-artifact@v4
         with:
-          name: merged-playwright-report
-          path: playwright-report/
-          retention-days: 30
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
 
       - name: Comment PR with test results
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
-            if (fs.existsSync('results.json')) {
-              const results = JSON.parse(fs.readFileSync('results.json', 'utf8'));
-              const comment = `## 🎭 Playwright Test Results
-              
-              - **Total Tests**: ${results.stats?.total || 'N/A'}
-              - **Passed**: ${results.stats?.passed || 'N/A'}
-              - **Failed**: ${results.stats?.failed || 'N/A'}
-              - **Skipped**: ${results.stats?.skipped || 'N/A'}
-              
-              View detailed results in the [test report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
-              
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: comment
-              });
-            }
+            const comment = \`## 🎭 Playwright Test Results
+            
+            Test run completed for commit \${{ github.sha }}
+            
+            📊 [View HTML Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }})
+            
+            **Browsers tested:** Chromium, Firefox
+            **Run attempt:** \${{ github.run_attempt }}
+            \`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
