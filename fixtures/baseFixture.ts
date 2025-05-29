@@ -1,12 +1,12 @@
 import { test as base } from "@playwright/test";
-import { NavigationPage } from "../page-objects/navigationPage";
-import { FormLayoutsPage } from "../page-objects/formLayoutsPage";
+import { IoTDashboardPage } from "../page-objects/IoTDashboardPage";
+import { BasePage } from "../page-objects/basePage";
 import { DatepickerPage } from "../page-objects/datepickerPage";
 import { DialogPage } from "../page-objects/dialogPage";
-import { BasePage } from "../page-objects/basePage";
-import { WindowPage } from "../page-objects/windowPage";
+import { FormLayoutsPage } from "../page-objects/formLayoutsPage";
+import { NavigationPage } from "../page-objects/navigationPage";
 import { SmartTablePage } from "../page-objects/smartTablePage";
-import { IoTDashboardPage } from "../page-objects/IoTDashboardPage";
+import { WindowPage } from "../page-objects/windowPage";
 
 // Define fixture types
 export type MainFixtures = {

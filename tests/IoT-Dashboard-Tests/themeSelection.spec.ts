@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 
 test.describe("Theme Selection Tests", () => {
   // Common setup for all tests
@@ -22,10 +22,7 @@ test.describe("Theme Selection Tests", () => {
           // Select theme
           const dropDownMenu = page.locator("ngx-header nb-select");
           await dropDownMenu.click();
-          await page
-            .locator("nb-option-list nb-option")
-            .filter({ hasText: theme })
-            .click();
+          await page.locator("nb-option-list nb-option").filter({ hasText: theme }).click();
 
           // Verify color
           const header = page.locator("nb-layout-header");
@@ -45,12 +42,7 @@ test.describe("Theme Selection Tests", () => {
 
     await test.step("Verify dropdown options", async () => {
       const optionList = page.locator("nb-option-list nb-option");
-      await expect(optionList).toHaveText([
-        "Light",
-        "Dark",
-        "Cosmic",
-        "Corporate",
-      ]);
+      await expect(optionList).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]);
     });
   });
 });

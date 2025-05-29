@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 
 test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
   test.beforeEach(async ({ basePage }) => {
@@ -6,23 +6,18 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
   });
 
   test.describe("Solar Component Layout", () => {
-    test("should display solar energy card with header and content", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display solar energy card with header and content", async ({ IoTDashboardPage }) => {
       await test.step("Verify solar card is visible", async () => {
         await expect(IoTDashboardPage.solarCard).toBeVisible();
       });
 
       await test.step("Verify solar energy header", async () => {
         await expect(IoTDashboardPage.solarHeader).toBeVisible();
-        await expect(IoTDashboardPage.solarHeader).toHaveText(
-          "Solar Energy Consumption",
-        );
+        await expect(IoTDashboardPage.solarHeader).toHaveText("Solar Energy Consumption");
       });
 
       await test.step("Verify card has proper size", async () => {
-        const cardClass =
-          await IoTDashboardPage.solarCard.getAttribute("class");
+        const cardClass = await IoTDashboardPage.solarCard.getAttribute("class");
         expect(cardClass).toContain("solar-card");
       });
     });
@@ -46,9 +41,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
       });
     });
 
-    test("should display solar energy consumption values", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display solar energy consumption values", async ({ IoTDashboardPage }) => {
       await test.step("Verify solar value is displayed", async () => {
         const solarValue = await IoTDashboardPage.getSolarValue();
         expect(solarValue).toBeTruthy();
@@ -67,9 +60,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
       });
 
       await test.step("Verify 'out of' total consumption is shown", async () => {
-        const detailsText = await IoTDashboardPage.solarCard
-          .locator(".details")
-          .textContent();
+        const detailsText = await IoTDashboardPage.solarCard.locator(".details").textContent();
         expect(detailsText).toContain("out of");
         expect(detailsText).toMatch(/out of \d+\.\d+ kWh/);
       });
@@ -77,9 +68,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
   });
 
   test.describe("Solar Chart Functionality", () => {
-    test("should display solar chart with proper styling", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display solar chart with proper styling", async ({ IoTDashboardPage }) => {
       await test.step("Wait for chart to load", async () => {
         await IoTDashboardPage.page.waitForTimeout(1000); // Allow chart to render
         await expect(IoTDashboardPage.solarChart).toBeVisible();
@@ -97,9 +86,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
       });
     });
 
-    test("should render chart with solar data", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should render chart with solar data", async ({ IoTDashboardPage }) => {
       await test.step("Verify chart data is loaded", async () => {
         // Wait for chart initialization
         await IoTDashboardPage.page.waitForFunction(
@@ -118,9 +105,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
       });
     });
 
-    test("should display chart with gradient colors", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display chart with gradient colors", async ({ IoTDashboardPage }) => {
       await test.step("Verify chart uses proper styling", async () => {
         await IoTDashboardPage.page.waitForTimeout(1000);
 
@@ -137,9 +122,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
   });
 
   test.describe("Solar Data Validation", () => {
-    test("should display realistic solar consumption values", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display realistic solar consumption values", async ({ IoTDashboardPage }) => {
       await test.step("Verify consumption value format", async () => {
         const solarValue = await IoTDashboardPage.getSolarValue();
         expect(solarValue).toMatch(/^\d+\.\d{3} kWh$/); // Format: "6.421 kWh"
@@ -147,7 +130,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
 
       await test.step("Verify consumption value is within realistic range", async () => {
         const solarValue = await IoTDashboardPage.getSolarValue();
-        const numericValue = parseFloat(solarValue.replace(" kWh", ""));
+        const numericValue = Number.parseFloat(solarValue.replace(" kWh", ""));
 
         // Solar consumption should be positive and reasonable for home use
         expect(numericValue).toBeGreaterThan(0);
@@ -155,31 +138,25 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
       });
 
       await test.step("Verify total capacity is higher than consumption", async () => {
-        const detailsText = await IoTDashboardPage.solarCard
-          .locator(".details")
-          .textContent();
+        const detailsText = await IoTDashboardPage.solarCard.locator(".details").textContent();
         const totalMatch = detailsText?.match(/(\d+\.\d+) kWh$/);
 
         if (totalMatch) {
-          const totalCapacity = parseFloat(totalMatch[1]);
+          const totalCapacity = Number.parseFloat(totalMatch[1]);
           const solarValue = await IoTDashboardPage.getSolarValue();
-          const consumption = parseFloat(solarValue.replace(" kWh", ""));
+          const consumption = Number.parseFloat(solarValue.replace(" kWh", ""));
 
           expect(totalCapacity).toBeGreaterThan(consumption);
         }
       });
     });
 
-    test("should maintain consistent data formatting", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should maintain consistent data formatting", async ({ IoTDashboardPage }) => {
       await test.step("Verify units are consistently displayed", async () => {
         const solarValue = await IoTDashboardPage.getSolarValue();
         expect(solarValue).toContain("kWh");
 
-        const detailsText = await IoTDashboardPage.solarCard
-          .locator(".details")
-          .textContent();
+        const detailsText = await IoTDashboardPage.solarCard.locator(".details").textContent();
         expect(detailsText).toContain("kWh");
       });
 
@@ -192,9 +169,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
   });
 
   test.describe("Solar Component Responsiveness", () => {
-    test("should adapt to different viewport sizes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should adapt to different viewport sizes", async ({ IoTDashboardPage }) => {
       const viewports = [
         { width: 320, height: 568, name: "Small Mobile" },
         { width: 768, height: 1024, name: "Tablet" },
@@ -219,9 +194,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
       }
     });
 
-    test("should maintain chart proportions on resize", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should maintain chart proportions on resize", async ({ IoTDashboardPage }) => {
       await test.step("Get initial chart dimensions", async () => {
         const initialBounds = await IoTDashboardPage.solarChart.boundingBox();
         expect(initialBounds).toBeTruthy();
@@ -254,9 +227,7 @@ test.describe("IoT Dashboard - Solar Energy Component Tests", () => {
       });
     });
 
-    test("should handle rapid viewport changes without errors", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should handle rapid viewport changes without errors", async ({ IoTDashboardPage }) => {
       await test.step("Rapidly change viewport sizes", async () => {
         const sizes = [
           { width: 400, height: 600 },

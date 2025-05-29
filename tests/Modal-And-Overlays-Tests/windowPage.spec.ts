@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 
 test.describe("Modal & Overlays, Window Tests", () => {
   test.beforeEach(async ({ basePage, navigationPage }) => {
@@ -23,9 +23,7 @@ test.describe("Modal & Overlays, Window Tests", () => {
       expect(await windowPage.waitForWindowToAppear());
     });
     await test.step("Verify window with template has some text", async () => {
-      await expect(windowPage.windowContent).toHaveText(
-        'Here is the text provided via config: "some text to pass into template"',
-      );
+      await expect(windowPage.windowContent).toHaveText('Here is the text provided via config: "some text to pass into template"');
     });
   });
 
@@ -35,9 +33,7 @@ test.describe("Modal & Overlays, Window Tests", () => {
       expect(await windowPage.waitForWindowToAppear());
     });
     await test.step("Verify window with backdrop has some text", async () => {
-      await expect(windowPage.windowContent).toHaveText(
-        'Here is the text provided via config: "some text to pass into template"',
-      );
+      await expect(windowPage.windowContent).toHaveText('Here is the text provided via config: "some text to pass into template"');
     });
   });
 
@@ -47,9 +43,7 @@ test.describe("Modal & Overlays, Window Tests", () => {
       expect(await windowPage.waitForWindowToAppear());
     });
     await test.step("Verify window without backdrop has some text", async () => {
-      await expect(windowPage.withoutBackdropWindowBody).toHaveText(
-        "Disabled close on escape click.",
-      );
+      await expect(windowPage.withoutBackdropWindowBody).toHaveText("Disabled close on escape click.");
     });
   });
 
@@ -90,9 +84,7 @@ test.describe("Modal & Overlays, Window Tests", () => {
     });
   });
 
-  test("should open window form and close with escape key", async ({
-    windowPage,
-  }) => {
+  test("should open window form and close with escape key", async ({ windowPage }) => {
     await test.step("Open window form", async () => {
       await windowPage.openWindowForm();
       expect(await windowPage.waitForWindowToAppear());
@@ -103,9 +95,7 @@ test.describe("Modal & Overlays, Window Tests", () => {
     });
   });
 
-  test("should open window with template and close with escape key", async ({
-    windowPage,
-  }) => {
+  test("should open window with template and close with escape key", async ({ windowPage }) => {
     await test.step("Open window with template", async () => {
       await windowPage.openWindowWithTemplate();
       expect(await windowPage.waitForWindowToAppear());
@@ -116,9 +106,7 @@ test.describe("Modal & Overlays, Window Tests", () => {
     });
   });
 
-  test("should open window with backdrop and close with escape key", async ({
-    windowPage,
-  }) => {
+  test("should open window with backdrop and close with escape key", async ({ windowPage }) => {
     await test.step("Open window with backdrop", async () => {
       await windowPage.openWindowWithBackdrop();
       expect(await windowPage.waitForWindowToAppear());
@@ -129,9 +117,7 @@ test.describe("Modal & Overlays, Window Tests", () => {
     });
   });
 
-  test("should open window without backdrop and NOT close with escape key", async ({
-    windowPage,
-  }) => {
+  test("should open window without backdrop and NOT close with escape key", async ({ windowPage }) => {
     await test.step("Open window without backdrop", async () => {
       await windowPage.openWindowWithoutBackdrop();
       expect(await windowPage.waitForWindowToAppear());

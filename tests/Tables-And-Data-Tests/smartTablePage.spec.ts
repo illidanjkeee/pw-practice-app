@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 import { env } from "../../utils/environment";
 
 test.describe("Tables & Data, Smart Table Page Tests", () => {
@@ -6,10 +6,7 @@ test.describe("Tables & Data, Smart Table Page Tests", () => {
     await basePage.navigateToHome();
     await navigationPage.smartTablePage();
   });
-  test("Confirm deletion dialog", async ({
-    navigationPage,
-    smartTablePage,
-  }) => {
+  test("Confirm deletion dialog", async ({ navigationPage, smartTablePage }) => {
     const page = navigationPage.page;
 
     await test.step("Set up dialog handler", async () => {

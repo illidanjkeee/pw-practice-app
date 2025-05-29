@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 export class NavigationPage extends BasePage {
@@ -104,9 +104,7 @@ export class NavigationPage extends BasePage {
     if (!groupMenuItem) {
       groupMenuItem = this.page.getByTitle(groupItemTitle);
       if (!groupMenuItem) {
-        throw new Error(
-          `Group menu item with title "${groupItemTitle}" not found`,
-        );
+        throw new Error(`Group menu item with title "${groupItemTitle}" not found`);
       }
       this.groupMenuItemCache.set(groupItemTitle, groupMenuItem);
     }
@@ -118,12 +116,9 @@ export class NavigationPage extends BasePage {
       await groupMenuItem.click();
 
       await this.page.waitForTimeout(500); // Small delay to ensure the menu expands
-      const newExpandedState =
-        await groupMenuItem.getAttribute("aria-expanded");
+      const newExpandedState = await groupMenuItem.getAttribute("aria-expanded");
       if (newExpandedState !== "true") {
-        throw new Error(
-          `Failed to expand group menu item with title "${groupItemTitle}".`,
-        );
+        throw new Error(`Failed to expand group menu item with title "${groupItemTitle}".`);
       }
     }
   }

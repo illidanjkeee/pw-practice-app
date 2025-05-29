@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 
 test.describe("IoT Dashboard - Traffic Component Tests", () => {
   test.beforeEach(async ({ basePage }) => {
@@ -6,29 +6,23 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
   });
 
   test.describe("Traffic Component Layout", () => {
-    test("should display traffic card with header and controls", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display traffic card with header and controls", async ({ IoTDashboardPage }) => {
       await test.step("Verify traffic card is visible", async () => {
         await expect(IoTDashboardPage.trafficCard).toBeVisible();
       });
 
       await test.step("Verify traffic consumption header", async () => {
         await expect(IoTDashboardPage.trafficHeader).toBeVisible();
-        await expect(IoTDashboardPage.trafficHeader).toHaveText(
-          "Traffic Consumption",
-        );
+        await expect(IoTDashboardPage.trafficHeader).toHaveText("Traffic Consumption");
       });
 
       await test.step("Verify card has proper size", async () => {
-        const cardClass =
-          await IoTDashboardPage.trafficCard.getAttribute("class");
+        const cardClass = await IoTDashboardPage.trafficCard.getAttribute("class");
         expect(cardClass).toContain("size-tiny");
       });
 
       await test.step("Verify card header layout", async () => {
-        const cardHeader =
-          IoTDashboardPage.trafficCard.locator("nb-card-header");
+        const cardHeader = IoTDashboardPage.trafficCard.locator("nb-card-header");
         await expect(cardHeader).toBeVisible();
 
         // Header should contain both title and select dropdown
@@ -37,9 +31,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should display traffic type selector", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display traffic type selector", async ({ IoTDashboardPage }) => {
       await test.step("Verify traffic type select is visible", async () => {
         await expect(IoTDashboardPage.trafficTypeSelect).toBeVisible();
       });
@@ -62,9 +54,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should display traffic chart component", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display traffic chart component", async ({ IoTDashboardPage }) => {
       await test.step("Verify traffic chart is visible", async () => {
         const isChartVisible = await IoTDashboardPage.isTrafficChartVisible();
         expect(isChartVisible).toBe(true);
@@ -83,9 +73,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
   });
 
   test.describe("Traffic Type Selection", () => {
-    test("should allow changing traffic data type", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should allow changing traffic data type", async ({ IoTDashboardPage }) => {
       await test.step("Open traffic type selector", async () => {
         await IoTDashboardPage.trafficTypeSelect.click();
       });
@@ -116,12 +104,9 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should update chart when traffic type changes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should update chart when traffic type changes", async ({ IoTDashboardPage }) => {
       await test.step("Get initial chart state", async () => {
-        const isInitiallyVisible =
-          await IoTDashboardPage.isTrafficChartVisible();
+        const isInitiallyVisible = await IoTDashboardPage.isTrafficChartVisible();
         expect(isInitiallyVisible).toBe(true);
       });
 
@@ -142,9 +127,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should maintain chart functionality across type changes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should maintain chart functionality across type changes", async ({ IoTDashboardPage }) => {
       await test.step("Test multiple type changes", async () => {
         await IoTDashboardPage.trafficTypeSelect.click();
         const options = IoTDashboardPage.page.locator("nb-option");
@@ -166,9 +149,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
   });
 
   test.describe("Traffic Chart Functionality", () => {
-    test("should render traffic chart with proper styling", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should render traffic chart with proper styling", async ({ IoTDashboardPage }) => {
       await test.step("Wait for chart to load", async () => {
         await IoTDashboardPage.page.waitForTimeout(1000);
         await expect(IoTDashboardPage.trafficChart).toBeVisible();
@@ -200,9 +181,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should display traffic data visualization", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display traffic data visualization", async ({ IoTDashboardPage }) => {
       await test.step("Verify chart displays data", async () => {
         // Wait for chart initialization
         await IoTDashboardPage.page.waitForTimeout(1500);
@@ -228,9 +207,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should handle chart resizing properly", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should handle chart resizing properly", async ({ IoTDashboardPage }) => {
       await test.step("Get initial chart size", async () => {
         const initialBounds = await IoTDashboardPage.trafficChart.boundingBox();
         expect(initialBounds).toBeTruthy();
@@ -262,9 +239,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
   });
 
   test.describe.skip("Traffic Component Responsiveness", () => {
-    test("should adapt to different screen sizes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should adapt to different screen sizes", async ({ IoTDashboardPage }) => {
       const viewports = [
         { width: 375, height: 667, name: "Mobile" },
         { width: 768, height: 1024, name: "Tablet" },
@@ -287,9 +262,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       }
     });
 
-    test("should maintain functionality on mobile devices", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should maintain functionality on mobile devices", async ({ IoTDashboardPage }) => {
       await test.step("Set mobile viewport", async () => {
         await IoTDashboardPage.page.setViewportSize({
           width: 375,
@@ -313,9 +286,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
   });
 
   test.describe("Traffic Component Performance", () => {
-    test("should load traffic data efficiently", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should load traffic data efficiently", async ({ IoTDashboardPage }) => {
       await test.step("Measure traffic component loading time", async () => {
         const startTime = Date.now();
 
@@ -327,9 +298,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should handle rapid type selection changes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should handle rapid type selection changes", async ({ IoTDashboardPage }) => {
       await test.step("Rapidly change traffic types", async () => {
         for (let i = 0; i < 3; i++) {
           await IoTDashboardPage.trafficTypeSelect.click();
@@ -351,9 +320,7 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       });
     });
 
-    test("should maintain performance with multiple interactions", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should maintain performance with multiple interactions", async ({ IoTDashboardPage }) => {
       await test.step("Perform multiple interactions", async () => {
         for (let i = 0; i < 5; i++) {
           await IoTDashboardPage.trafficChart.hover();

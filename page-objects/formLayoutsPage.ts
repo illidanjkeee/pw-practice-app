@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 interface FormCredentials {
@@ -28,9 +28,7 @@ export class FormLayoutsPage extends BasePage {
     this.inlineForm = this.initializeInlineForm();
   }
 
-  async submitUsingTheGridFormWithCredentialsAndSelectOption(
-    credentials: FormCredentials,
-  ): Promise<void> {
+  async submitUsingTheGridFormWithCredentialsAndSelectOption(credentials: FormCredentials): Promise<void> {
     await this.gridForm.waitFor({ state: "visible" });
 
     await this.fillGridFormFields(credentials);
@@ -38,9 +36,7 @@ export class FormLayoutsPage extends BasePage {
     await this.submitGridForm();
   }
 
-  async submitInlineFormWithNameEmailAndCheckbox(
-    credentials: FormCredentials,
-  ): Promise<void> {
+  async submitInlineFormWithNameEmailAndCheckbox(credentials: FormCredentials): Promise<void> {
     await this.inlineForm.waitFor({ state: "visible" });
 
     await this.fillInlineFormFields(credentials);
@@ -69,10 +65,7 @@ export class FormLayoutsPage extends BasePage {
    * @returns Locator for the grid form
    */
   private initializeGridForm(): Locator {
-    return this.page
-      .locator("nb-card")
-      .filter({ hasText: "Using the Grid" })
-      .locator("form");
+    return this.page.locator("nb-card").filter({ hasText: "Using the Grid" }).locator("form");
   }
 
   /**
@@ -80,9 +73,7 @@ export class FormLayoutsPage extends BasePage {
    * @returns Locator for the inline form
    */
   private initializeInlineForm(): Locator {
-    return this.page
-      .locator("nb-card", { hasText: "Inline form" })
-      .locator("form");
+    return this.page.locator("nb-card", { hasText: "Inline form" }).locator("form");
   }
 
   /**
@@ -90,14 +81,10 @@ export class FormLayoutsPage extends BasePage {
    * @param credentials - Object containing email and password
    */
 
-  private async fillGridFormFields(
-    credentials: FormCredentials,
-  ): Promise<void> {
+  private async fillGridFormFields(credentials: FormCredentials): Promise<void> {
     const { email, password } = credentials;
     await this.gridForm.getByRole("textbox", { name: "Email" }).fill(email);
-    await this.gridForm
-      .getByRole("textbox", { name: "Password" })
-      .fill(password);
+    await this.gridForm.getByRole("textbox", { name: "Password" }).fill(password);
   }
 
   /**
@@ -107,9 +94,7 @@ export class FormLayoutsPage extends BasePage {
    */
 
   private async selectGridFormOption(optionText: string): Promise<void> {
-    const radioOption = this.gridForm.locator(
-      `label:has-text("${optionText}")`,
-    );
+    const radioOption = this.gridForm.locator(`label:has-text("${optionText}")`);
     await radioOption.waitFor({ state: "visible" });
     await radioOption.click();
   }
@@ -121,9 +106,7 @@ export class FormLayoutsPage extends BasePage {
     await this.gridForm.getByRole("button", { name: "Sign In" }).click();
   }
 
-  private async fillInlineFormFields(
-    credentials: FormCredentials,
-  ): Promise<void> {
+  private async fillInlineFormFields(credentials: FormCredentials): Promise<void> {
     const { name, email } = credentials;
     await this.inlineForm.getByRole("textbox", { name: "Jane Doe" }).fill(name);
     await this.inlineForm.getByRole("textbox", { name: "Email" }).fill(email);
@@ -131,9 +114,7 @@ export class FormLayoutsPage extends BasePage {
 
   private async handleRememberMe(rememberMe: boolean): Promise<void> {
     if (rememberMe) {
-      await this.inlineForm
-        .getByRole("checkbox", { name: "Remember me" })
-        .check({ force: true });
+      await this.inlineForm.getByRole("checkbox", { name: "Remember me" }).check({ force: true });
     }
   }
 
@@ -148,10 +129,35 @@ export class FormLayoutsPage extends BasePage {
    * @param name The name of the element to find
    * @returns The located element
    */
-  getFormElement(formName: string, role: string, name: string): Locator {
-    return this.page
-      .locator("nb-card")
-      .filter({ hasText: formName })
-      .getByRole(role as any, { name });
+  getFormElement(
+    formName: string,
+    role:
+      | "button"
+      | "textbox"
+      | "checkbox"
+      | "radio"
+      | "link"
+      | "heading"
+      | "listitem"
+      | "list"
+      | "table"
+      | "cell"
+      | "row"
+      | "columnheader"
+      | "rowheader"
+      | "generic"
+      | "img"
+      | "article"
+      | "banner"
+      | "complementary"
+      | "contentinfo"
+      | "form"
+      | "main"
+      | "navigation"
+      | "region"
+      | "search",
+    name: string,
+  ): Locator {
+    return this.page.locator("nb-card").filter({ hasText: formName }).getByRole(role, { name });
   }
 }

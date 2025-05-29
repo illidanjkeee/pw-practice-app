@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 /**
@@ -30,39 +30,19 @@ export class WindowPage extends BasePage {
     super(page);
 
     // Window buttons
-    this.openWindowFormButton = this.page.locator(
-      "button:has-text('Open Window Form')",
-    );
-    this.openWindowWithTemplateButton = this.page.locator(
-      "button:has-text('Open Window With Template')",
-    );
-    this.openWindowWithBackdropButton = this.page.locator(
-      "button:has-text('Open Window With Backdrop')",
-    );
-    this.openWindowWithoutBackdropButton = this.page.locator(
-      "button:has-text('Open Window Without Backdrop')",
-    );
-    this.openWindowFormCard = this.page.locator(
-      "//nb-window[@class='full-screen ng-star-inserted']//nb-card",
-    );
+    this.openWindowFormButton = this.page.locator("button:has-text('Open Window Form')");
+    this.openWindowWithTemplateButton = this.page.locator("button:has-text('Open Window With Template')");
+    this.openWindowWithBackdropButton = this.page.locator("button:has-text('Open Window With Backdrop')");
+    this.openWindowWithoutBackdropButton = this.page.locator("button:has-text('Open Window Without Backdrop')");
+    this.openWindowFormCard = this.page.locator("//nb-window[@class='full-screen ng-star-inserted']//nb-card");
     this.openWindowFormSubjectInput = this.page.locator("#subject");
     this.openWindowFormTextInput = this.page.locator("//textarea[@id='text']");
-    this.minimizeWindowButton = this.page.locator(
-      "div[class='cdk-overlay-container'] button:nth-child(1)",
-    );
-    this.collapseWindowButton = this.page.locator(
-      "div[class='cdk-overlay-container'] button:nth-child(2)",
-    );
-    this.hideWindowButton = this.page.locator(
-      "div[class='cdk-overlay-container'] button:nth-child(3)",
-    );
-    this.collapsedWindowCard = this.page.locator(
-      "//nb-window[@class='ng-star-inserted maximized']//nb-card",
-    );
+    this.minimizeWindowButton = this.page.locator("div[class='cdk-overlay-container'] button:nth-child(1)");
+    this.collapseWindowButton = this.page.locator("div[class='cdk-overlay-container'] button:nth-child(2)");
+    this.hideWindowButton = this.page.locator("div[class='cdk-overlay-container'] button:nth-child(3)");
+    this.collapsedWindowCard = this.page.locator("//nb-window[@class='ng-star-inserted maximized']//nb-card");
     this.windowContent = this.page.locator("//p[@class='ng-star-inserted']");
-    this.withoutBackdropWindowBody = this.page.locator(
-      "nb-card-body nb-overlay-container",
-    );
+    this.withoutBackdropWindowBody = this.page.locator("nb-card-body nb-overlay-container");
   }
 
   async waitForWindowToAppear() {

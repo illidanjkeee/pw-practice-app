@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 
 test.describe("Modal & Overlays, Dialog Tests", () => {
   test.beforeEach(async ({ navigationPage, basePage }) => {
@@ -16,9 +16,7 @@ test.describe("Modal & Overlays, Dialog Tests", () => {
 
     await test.step("Verify dialog is visible with correct content", async () => {
       expect(await dialogPage.isDialogVisible()).toBeTruthy();
-      expect(await dialogPage.getDialogText()).toContain(
-        "this is some additional data passed to dialog",
-      );
+      expect(await dialogPage.getDialogText()).toContain("this is some additional data passed to dialog");
     });
 
     await test.step("Close dialog and verify it's closed", async () => {
@@ -28,9 +26,7 @@ test.describe("Modal & Overlays, Dialog Tests", () => {
     });
   });
 
-  test("should close dialog with escape key when ESC close is enabled", async ({
-    dialogPage,
-  }) => {
+  test("should close dialog with escape key when ESC close is enabled", async ({ dialogPage }) => {
     await test.step("Open dialog with ESC close enabled", async () => {
       await dialogPage.openDialogWithEscClose();
       await dialogPage.waitForDialogToAppear();
@@ -44,9 +40,7 @@ test.describe("Modal & Overlays, Dialog Tests", () => {
     });
   });
 
-  test("should NOT close dialog with escape key when ESC close is disabled", async ({
-    dialogPage,
-  }) => {
+  test("should NOT close dialog with escape key when ESC close is disabled", async ({ dialogPage }) => {
     const page = dialogPage.page;
 
     await test.step("Open dialog with ESC close disabled", async () => {
@@ -67,9 +61,7 @@ test.describe("Modal & Overlays, Dialog Tests", () => {
     });
   });
 
-  test("should close dialog with backdrop click when enabled", async ({
-    dialogPage,
-  }) => {
+  test("should close dialog with backdrop click when enabled", async ({ dialogPage }) => {
     await test.step("Open dialog with backdrop click enabled", async () => {
       await dialogPage.openDialogWithBackdropClick();
       await dialogPage.waitForDialogToAppear();
@@ -83,9 +75,7 @@ test.describe("Modal & Overlays, Dialog Tests", () => {
     });
   });
 
-  test("should NOT close dialog with backdrop click when disabled", async ({
-    dialogPage,
-  }) => {
+  test("should NOT close dialog with backdrop click when disabled", async ({ dialogPage }) => {
     const page = dialogPage.page;
 
     await test.step("Open dialog with backdrop click disabled", async () => {
@@ -106,9 +96,7 @@ test.describe("Modal & Overlays, Dialog Tests", () => {
     });
   });
 
-  test("should add names to the list in the enter name dialog", async ({
-    dialogPage,
-  }) => {
+  test("should add names to the list in the enter name dialog", async ({ dialogPage }) => {
     await test.step("Define test names", async () => {
       const namesToAdd = ["Alice", "Bob", "Charlie"];
 

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "ignore": [
+      "src/**",
+      "dist/**",
+      "node_modules/**",
+      "playwright-report/**",
+      "test-results/**",
+      ".angular/**",
+      ".git/**",
+      ".github/**",
+      ".idea/**",
+      ".vscode/**",
+      "angular.json",
+      "*.html",
+      "*.css",
+      "*.scss",
+      "*.md",
+      "package*.json",
+      "tsconfig*.json",
+      "tslint.json",
+      ".eslintrc.json",
+      "eslint.config.js",
+      ".browserslistrc",
+      ".editorconfig",
+      ".env*",
+      ".prettierignore",
+      ".stylelintrc.json",
+      "docker-compose.yaml",
+      "Dockerfile",
+      "LICENSE"
+    ],
+    "include": [
+      "tests/**/*.ts",
+      "page-objects/**/*.ts",
+      "fixtures/**/*.ts",
+      "utils/**/*.ts",
+      "testData/**/*.ts",
+      "playwright.config.ts",
+      "playwright.ci.config.ts"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 140,
+    "attributePosition": "auto",
+    "bracketSpacing": true
+  },
+  "organizeImports": { "enabled": true },
+  "linter": { "enabled": true, "rules": { "recommended": true } },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "all",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "double",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    }
+  }
+}

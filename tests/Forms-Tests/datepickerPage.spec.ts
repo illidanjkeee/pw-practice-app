@@ -15,17 +15,12 @@ test.describe("Forms, Datepicker Page Tests", () => {
     });
   });
 
-  test("should select date range from datepicker", async ({
-    datepickerPage,
-  }) => {
+  test("should select date range from datepicker", async ({ datepickerPage }) => {
     const startDaysAhead = 3;
     const endDaysAhead = 5;
 
     await test.step(`Select date range from ${startDaysAhead} to ${endDaysAhead} days ahead`, async () => {
-      await datepickerPage.selectDatepickerWithRangeFromToday(
-        startDaysAhead,
-        endDaysAhead,
-      );
+      await datepickerPage.selectDatepickerWithRangeFromToday(startDaysAhead, endDaysAhead);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { expect, Page, Locator } from "@playwright/test";
+import { type Locator, type Page, expect } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 /**
@@ -32,19 +32,11 @@ export class DatepickerPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.calendarInput = this.page.getByPlaceholder("Form Picker");
-    this.calendarInputWithRange = this.page.locator(
-      'input[placeholder="Range Picker"]',
-    );
+    this.calendarInputWithRange = this.page.locator('input[placeholder="Range Picker"]');
     this.calendarViewMode = this.page.locator("nb-calendar-view-mode");
-    this.nextMonthButton = this.page.locator(
-      'nb-calendar-pageable-navigation [data-name="chevron-right"]',
-    );
-    this.prevMonthButton = this.page.locator(
-      'nb-calendar-pageable-navigation [data-name="chevron-left"]',
-    );
-    this.activeDayCell = this.page.locator(
-      ".day-cell.ng-star-inserted:not(.bounding-month)",
-    );
+    this.nextMonthButton = this.page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]');
+    this.prevMonthButton = this.page.locator('nb-calendar-pageable-navigation [data-name="chevron-left"]');
+    this.activeDayCell = this.page.locator(".day-cell.ng-star-inserted:not(.bounding-month)");
   }
 
   /**
@@ -52,9 +44,7 @@ export class DatepickerPage extends BasePage {
    * @param numberOfDaysFromToday Number of days to add to today's date
    */
 
-  async selectCommonDatepickerDateFromToday(
-    numberOfDaysFromToday: number,
-  ): Promise<void> {
+  async selectCommonDatepickerDateFromToday(numberOfDaysFromToday: number): Promise<void> {
     await this.calendarInput.click();
     const targetDate = this.calculateTargetDate(numberOfDaysFromToday);
     await this.navigateToTargetMonth(targetDate);
@@ -62,10 +52,7 @@ export class DatepickerPage extends BasePage {
     await this.verifySelectedDate(targetDate, this.calendarInput);
   }
 
-  async selectDatepickerWithRangeFromToday(
-    startDayFromToday: number,
-    endDayFromToday: number,
-  ): Promise<void> {
+  async selectDatepickerWithRangeFromToday(startDayFromToday: number, endDayFromToday: number): Promise<void> {
     await this.calendarInputWithRange.click();
 
     const startDate = this.calculateTargetDate(startDayFromToday);
@@ -101,21 +88,18 @@ export class DatepickerPage extends BasePage {
     });
     const expectedYear = targetDate.getFullYear();
     const expectedMonthYear = `${expectedMonth} ${expectedYear}`;
-    let calendarMonthAndYear =
-      (await this.calendarViewMode.textContent()) || "";
+    let calendarMonthAndYear = (await this.calendarViewMode.textContent()) || "";
 
     // Determine direction to navigate
     if (targetDate > new Date()) {
       while (!calendarMonthAndYear.includes(expectedMonthYear)) {
         await this.nextMonthButton.click();
-        calendarMonthAndYear =
-          (await this.calendarViewMode.textContent()) || "";
+        calendarMonthAndYear = (await this.calendarViewMode.textContent()) || "";
       }
     } else {
       while (!calendarMonthAndYear.includes(expectedMonthYear)) {
         await this.prevMonthButton.click();
-        calendarMonthAndYear =
-          (await this.calendarViewMode.textContent()) || "";
+        calendarMonthAndYear = (await this.calendarViewMode.textContent()) || "";
       }
     }
   }
@@ -145,10 +129,7 @@ export class DatepickerPage extends BasePage {
   /**
    * Verifies the selected date in input field
    */
-  private async verifySelectedDate(
-    date: Date,
-    inputField: Locator,
-  ): Promise<void> {
+  private async verifySelectedDate(date: Date, inputField: Locator): Promise<void> {
     const expectedDateString = this.formatDateForAssertion(date);
 
     await expect(inputField).not.toHaveValue("", { timeout: 10000 });

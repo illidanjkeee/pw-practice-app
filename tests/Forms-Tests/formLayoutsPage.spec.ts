@@ -1,8 +1,8 @@
 // Update the import path if the file exists elsewhere, for example:
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
+import { testForms } from "../../testData/navigationData";
 // Or, if the file does not exist, create 'baseFixture.ts' in the correct directory with the necessary exports.
 import { env } from "../../utils/environment";
-import { testForms } from "../../testData/navigationData";
 
 test.describe("Forms, Form Layouts Page Tests", () => {
   // Common setup for all tests
@@ -13,11 +13,7 @@ test.describe("Forms, Form Layouts Page Tests", () => {
 
   test("Input Fields", async ({ formLayoutsPage }) => {
     await test.step('Get the email input from the "Using the Grid" form', async () => {
-      const usingTheGridEmailInput = formLayoutsPage.getFormElement(
-        "Using the Grid",
-        "textbox",
-        "email",
-      );
+      const usingTheGridEmailInput = formLayoutsPage.getFormElement("Using the Grid", "textbox", "email");
 
       await test.step("Fill email input", async () => {
         await usingTheGridEmailInput.fill(env.testUser.email);
@@ -46,13 +42,9 @@ test.describe("Forms, Form Layouts Page Tests", () => {
   });
 
   // Form submission tests from usePageObjects.spec.ts
-  test("should submit grid form with credentials", async ({
-    formLayoutsPage,
-  }) => {
+  test("should submit grid form with credentials", async ({ formLayoutsPage }) => {
     await test.step("Submit grid form with credentials", async () => {
-      await formLayoutsPage.submitUsingTheGridFormWithCredentialsAndSelectOption(
-        testForms[0],
-      );
+      await formLayoutsPage.submitUsingTheGridFormWithCredentialsAndSelectOption(testForms[0]);
     });
 
     await test.step("Verify form submission", async () => {
@@ -62,13 +54,9 @@ test.describe("Forms, Form Layouts Page Tests", () => {
     });
   });
 
-  test("should submit inline form with user details", async ({
-    formLayoutsPage,
-  }) => {
+  test("should submit inline form with user details", async ({ formLayoutsPage }) => {
     await test.step("Submit inline form with name, email and checkbox", async () => {
-      await formLayoutsPage.submitInlineFormWithNameEmailAndCheckbox(
-        testForms[1],
-      );
+      await formLayoutsPage.submitInlineFormWithNameEmailAndCheckbox(testForms[1]);
     });
 
     await test.step("Verify inline form submission", async () => {

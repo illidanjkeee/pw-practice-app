@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 
 test.describe("IoT Dashboard - Electricity Component Tests", () => {
   test.beforeEach(async ({ basePage }) => {
@@ -6,39 +6,29 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
   });
 
   test.describe("Electricity Component Layout", () => {
-    test("should display electricity component with all sub-components", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display electricity component with all sub-components", async ({ IoTDashboardPage }) => {
       await test.step("Verify electricity card is visible", async () => {
         await expect(IoTDashboardPage.electricityCard).toBeVisible();
       });
       await test.step("Verify electricity consumption header", async () => {
         // Check that the text "Electricity Consumption" exists in the component
-        const headerText = IoTDashboardPage.page
-          .locator("ngx-electricity")
-          .getByText("Electricity Consumption");
+        const headerText = IoTDashboardPage.page.locator("ngx-electricity").getByText("Electricity Consumption");
         await expect(headerText).toHaveCount(1);
-        expect(await headerText.textContent()).toContain(
-          "Electricity Consumption",
-        );
+        expect(await headerText.textContent()).toContain("Electricity Consumption");
       });
 
       await test.step("Verify electricity chart is displayed", async () => {
-        const isChartVisible =
-          await IoTDashboardPage.isElectricityChartVisible();
+        const isChartVisible = await IoTDashboardPage.isElectricityChartVisible();
         expect(isChartVisible).toBe(true);
       });
       await test.step("Verify electricity data table is visible", async () => {
         // Check if the electricity table exists (even if not visible) and has content
-        const tableExists =
-          (await IoTDashboardPage.electricityTable.count()) > 0;
+        const tableExists = (await IoTDashboardPage.electricityTable.count()) > 0;
         expect(tableExists).toBe(true);
       });
     });
 
-    test("should display consumption statistics", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display consumption statistics", async ({ IoTDashboardPage }) => {
       await test.step("Verify consumed stats are displayed", async () => {
         const consumedStats = IoTDashboardPage.page.locator("text=Consumed");
         await expect(consumedStats).toBeVisible();
@@ -50,18 +40,14 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
       });
 
       await test.step("Verify kWh values are displayed", async () => {
-        const kwhValue = IoTDashboardPage.page
-          .locator("span:nth-child(1) span:nth-child(2)")
-          .first();
+        const kwhValue = IoTDashboardPage.page.locator("span:nth-child(1) span:nth-child(2)").first();
         await expect(kwhValue).toBeVisible();
         const kwhText = await kwhValue.textContent();
         expect(kwhText).toMatch(/\d+/); // Should contain numeric value
       });
 
       await test.step("Verify USD values are displayed", async () => {
-        const usdValue = IoTDashboardPage.page.locator(
-          "body ngx-app span:nth-child(2) span:nth-child(2)",
-        );
+        const usdValue = IoTDashboardPage.page.locator("body ngx-app span:nth-child(2) span:nth-child(2)");
         await expect(usdValue).toBeVisible();
         const usdText = await usdValue.textContent();
         expect(usdText).toMatch(/\d+/); // Should contain numeric value
@@ -70,9 +56,7 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
   });
 
   test.describe("Electricity Chart Functionality", () => {
-    test("should display and interact with electricity chart", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display and interact with electricity chart", async ({ IoTDashboardPage }) => {
       await test.step("Verify chart component is present", async () => {
         await expect(IoTDashboardPage.electricityChart).toBeVisible();
       });
@@ -87,9 +71,7 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
       });
     });
 
-    test("should change chart data based on type selection", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should change chart data based on type selection", async ({ IoTDashboardPage }) => {
       const types = ["week", "month", "year"];
 
       for (const type of types) {
@@ -105,12 +87,9 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
       }
     });
 
-    test("should display chart with proper styling", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display chart with proper styling", async ({ IoTDashboardPage }) => {
       await test.step("Verify chart has proper dimensions", async () => {
-        const chartElement =
-          IoTDashboardPage.electricityChart.locator(".echart");
+        const chartElement = IoTDashboardPage.electricityChart.locator(".echart");
         await expect(chartElement).toBeVisible();
 
         const boundingBox = await chartElement.boundingBox();
@@ -121,67 +100,53 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
   });
 
   test.describe("Electricity Data Table", () => {
-    test("should display electricity consumption data in tabs", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display electricity consumption data in tabs", async ({ IoTDashboardPage }) => {
       await test.step("Verify tabs are present", async () => {
         const tabsCount = await IoTDashboardPage.getElectricityTabsCount();
         expect(tabsCount).toBeGreaterThan(0);
       });
 
       await test.step("Verify list items in active tab", async () => {
-        const listItems =
-          IoTDashboardPage.electricityTable.locator("nb-list-item");
+        const listItems = IoTDashboardPage.electricityTable.locator("nb-list-item");
         const itemCount = await listItems.count();
         expect(itemCount).toBeGreaterThan(0);
       });
 
       await test.step("Verify month data structure", async () => {
-        const monthElements =
-          IoTDashboardPage.electricityTable.locator(".month");
+        const monthElements = IoTDashboardPage.electricityTable.locator(".month");
         const monthCount = await monthElements.count();
         expect(monthCount).toBeGreaterThan(0);
       });
 
       await test.step("Verify consumption results are displayed", async () => {
-        const resultsElements =
-          IoTDashboardPage.electricityTable.locator(".results");
+        const resultsElements = IoTDashboardPage.electricityTable.locator(".results");
         const resultsCount = await resultsElements.count();
         expect(resultsCount).toBeGreaterThan(0);
       });
     });
 
-    test("should display proper data format in table", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display proper data format in table", async ({ IoTDashboardPage }) => {
       await test.step("Verify kWh values are formatted correctly", async () => {
-        const kwhElements =
-          IoTDashboardPage.electricityTable.locator("text=/\\d+.*kWh/");
+        const kwhElements = IoTDashboardPage.electricityTable.locator("text=/\\d+.*kWh/");
         const kwhCount = await kwhElements.count();
         expect(kwhCount).toBeGreaterThan(0);
       });
 
       await test.step("Verify USD values are formatted correctly", async () => {
-        const usdElements =
-          IoTDashboardPage.electricityTable.locator("text=/\\d+.*USD/");
+        const usdElements = IoTDashboardPage.electricityTable.locator("text=/\\d+.*USD/");
         const usdCount = await usdElements.count();
         expect(usdCount).toBeGreaterThan(0);
       });
 
       await test.step("Verify trend indicators are present", async () => {
-        const upArrows =
-          IoTDashboardPage.electricityTable.locator("nb-icon.up");
-        const downArrows =
-          IoTDashboardPage.electricityTable.locator("nb-icon.down");
-        const totalArrows =
-          (await upArrows.count()) + (await downArrows.count());
+        const upArrows = IoTDashboardPage.electricityTable.locator("nb-icon.up");
+        const downArrows = IoTDashboardPage.electricityTable.locator("nb-icon.down");
+        const totalArrows = (await upArrows.count()) + (await downArrows.count());
         expect(totalArrows).toBeGreaterThan(0);
       });
     });
 
-    test("should allow tab navigation in electricity table", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should allow tab navigation in electricity table", async ({ IoTDashboardPage }) => {
       await test.step("Get initial tab count", async () => {
         const tabsCount = await IoTDashboardPage.getElectricityTabsCount();
         expect(tabsCount).toBeGreaterThan(0);
@@ -206,9 +171,7 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
   });
 
   test.describe("Electricity Component Responsiveness", () => {
-    test("should handle viewport changes gracefully", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should handle viewport changes gracefully", async ({ IoTDashboardPage }) => {
       await test.step("Test in mobile viewport", async () => {
         await IoTDashboardPage.page.setViewportSize({
           width: 375,
@@ -234,9 +197,7 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
       });
     });
 
-    test("should maintain functionality across different screen sizes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should maintain functionality across different screen sizes", async ({ IoTDashboardPage }) => {
       const viewports = [
         { width: 320, height: 568 }, // Small mobile
         { width: 768, height: 1024 }, // Tablet
@@ -248,8 +209,7 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
           await IoTDashboardPage.page.setViewportSize(viewport);
 
           // Chart should still be visible and functional
-          const isChartVisible =
-            await IoTDashboardPage.isElectricityChartVisible();
+          const isChartVisible = await IoTDashboardPage.isElectricityChartVisible();
           expect(isChartVisible).toBe(true);
 
           // Type selector should be functional
@@ -272,9 +232,7 @@ test.describe("IoT Dashboard - Electricity Component Tests", () => {
       });
     });
 
-    test("should handle rapid type changes without errors", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should handle rapid type changes without errors", async ({ IoTDashboardPage }) => {
       await test.step("Rapidly change chart types", async () => {
         const types = ["week", "month", "year"];
 

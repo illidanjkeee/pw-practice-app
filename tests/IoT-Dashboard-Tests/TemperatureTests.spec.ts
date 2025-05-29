@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 
 test.describe("IoT Dashboard - Temperature Component Tests", () => {
   test.beforeEach(async ({ basePage }) => {
@@ -6,9 +6,7 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
   });
 
   test.describe("Temperature Tab Functionality", () => {
-    test("should display temperature card and verify default state", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display temperature card and verify default state", async ({ IoTDashboardPage }) => {
       await test.step("Verify temperature card is visible", async () => {
         await expect(IoTDashboardPage.temperatureCard).toBeVisible();
       });
@@ -25,9 +23,7 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
     });
 
-    test("should switch between temperature and humidity tabs", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should switch between temperature and humidity tabs", async ({ IoTDashboardPage }) => {
       await test.step("Switch to humidity tab", async () => {
         await IoTDashboardPage.switchToHumidityTab();
         await expect(IoTDashboardPage.humidityValue).toBeVisible();
@@ -39,9 +35,7 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
     });
 
-    test("should toggle temperature power on and off", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should toggle temperature power on and off", async ({ IoTDashboardPage }) => {
       await test.step("Ensure temperature tab is active", async () => {
         await IoTDashboardPage.switchToTemperatureTab();
       });
@@ -63,19 +57,12 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
     });
 
-    test("should allow selection of different temperature modes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should allow selection of different temperature modes", async ({ IoTDashboardPage }) => {
       await test.step("Ensure temperature tab is active", async () => {
         await IoTDashboardPage.switchToTemperatureTab();
       });
 
-      const modes: Array<"cool" | "warm" | "heat" | "fan"> = [
-        "cool",
-        "warm",
-        "heat",
-        "fan",
-      ];
+      const modes: Array<"cool" | "warm" | "heat" | "fan"> = ["cool", "warm", "heat", "fan"];
 
       for (const mode of modes) {
         await test.step(`Select ${mode} mode`, async () => {
@@ -85,9 +72,7 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       }
     });
 
-    test("should verify temperature slider is interactive", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should verify temperature slider is interactive", async ({ IoTDashboardPage }) => {
       await test.step("Ensure temperature tab is active", async () => {
         await IoTDashboardPage.switchToTemperatureTab();
       });
@@ -97,18 +82,14 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
 
       await test.step("Verify temperature dragger component exists", async () => {
-        const draggerComponent = IoTDashboardPage.page
-          .locator("ngx-temperature-dragger")
-          .first();
+        const draggerComponent = IoTDashboardPage.page.locator("ngx-temperature-dragger").first();
         await expect(draggerComponent).toBeVisible();
       });
     });
   });
 
   test.describe("Humidity Tab Functionality", () => {
-    test("should display humidity controls when switching to humidity tab", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should display humidity controls when switching to humidity tab", async ({ IoTDashboardPage }) => {
       await test.step("Switch to humidity tab", async () => {
         await IoTDashboardPage.switchToHumidityTab();
       });
@@ -124,9 +105,7 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
     });
 
-    test("should toggle humidity power on and off", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should toggle humidity power on and off", async ({ IoTDashboardPage }) => {
       await test.step("Switch to humidity tab", async () => {
         await IoTDashboardPage.switchToHumidityTab();
       });
@@ -148,19 +127,12 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
     });
 
-    test("should allow selection of different humidity modes", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should allow selection of different humidity modes", async ({ IoTDashboardPage }) => {
       await test.step("Switch to humidity tab", async () => {
         await IoTDashboardPage.switchToHumidityTab();
       });
 
-      const modes: Array<"cool" | "warm" | "heat" | "fan"> = [
-        "cool",
-        "warm",
-        "heat",
-        "fan",
-      ];
+      const modes: Array<"cool" | "warm" | "heat" | "fan"> = ["cool", "warm", "heat", "fan"];
 
       for (const mode of modes) {
         await test.step(`Select ${mode} mode for humidity`, async () => {
@@ -187,9 +159,7 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
     });
 
-    test("should maintain mode selection when toggling power", async ({
-      IoTDashboardPage,
-    }) => {
+    test("should maintain mode selection when toggling power", async ({ IoTDashboardPage }) => {
       await test.step("Select heat mode", async () => {
         await IoTDashboardPage.selectTemperatureMode("heat");
       });
@@ -200,8 +170,7 @@ test.describe("IoT Dashboard - Temperature Component Tests", () => {
       });
 
       await test.step("Verify mode is preserved", async () => {
-        const heatRadio =
-          IoTDashboardPage.temperatureModeButtons.locator('[value="heat"]');
+        const heatRadio = IoTDashboardPage.temperatureModeButtons.locator('[value="heat"]');
         await expect(heatRadio).toBeChecked();
       });
     });

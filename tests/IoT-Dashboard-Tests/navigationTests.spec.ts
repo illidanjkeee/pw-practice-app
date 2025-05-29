@@ -1,12 +1,9 @@
-import { test, expect } from "../../fixtures/baseFixture";
+import { expect, test } from "../../fixtures/baseFixture";
 import { navigationPages } from "../../testData/navigationData";
 
 test.describe("Navigation Tests", () => {
-  navigationPages.forEach((navPage) => {
-    test(`should navigate to ${navPage.name} page`, async ({
-      navigationPage,
-      basePage,
-    }) => {
+  for (const navPage of navigationPages) {
+    test(`should navigate to ${navPage.name} page`, async ({ navigationPage, basePage }) => {
       await test.step(`Navigate to ${navPage.name} page`, async () => {
         await navigationPage.navigateTo(navPage.url);
 
@@ -16,5 +13,5 @@ test.describe("Navigation Tests", () => {
         });
       });
     });
-  });
+  }
 });

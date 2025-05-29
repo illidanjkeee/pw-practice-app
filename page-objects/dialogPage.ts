@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 /**
@@ -36,30 +36,14 @@ export class DialogPage extends BasePage {
     super(page);
 
     // Dialog buttons - Updated based on the HTML structure
-    this.openDialogWithComponentButton = this.page.locator(
-      "button:has-text('Open Dialog with component')",
-    );
-    this.openDialogWithTemplateButton = this.page.locator(
-      "button:has-text('Open Dialog with template')",
-    );
-    this.openDialogWithBackdropButton = this.page.locator(
-      "button:has-text('Open Dialog with backdrop')",
-    );
-    this.openDialogWithoutBackdropButton = this.page.locator(
-      "button:has-text('Open Dialog without backdrop')",
-    );
-    this.openDialogWithEscCloseButton = this.page.locator(
-      "button:has-text('Open Dialog with esc close')",
-    );
-    this.openDialogWithoutEscCloseButton = this.page.locator(
-      "button:has-text('Open Dialog without esc close')",
-    );
-    this.openDialogWithBackdropClickButton = this.page.locator(
-      "button:has-text('Open Dialog with backdrop click')",
-    );
-    this.openWithoutBackdropClickButton = this.page.locator(
-      "button:has-text('Open without backdrop click')",
-    );
+    this.openDialogWithComponentButton = this.page.locator("button:has-text('Open Dialog with component')");
+    this.openDialogWithTemplateButton = this.page.locator("button:has-text('Open Dialog with template')");
+    this.openDialogWithBackdropButton = this.page.locator("button:has-text('Open Dialog with backdrop')");
+    this.openDialogWithoutBackdropButton = this.page.locator("button:has-text('Open Dialog without backdrop')");
+    this.openDialogWithEscCloseButton = this.page.locator("button:has-text('Open Dialog with esc close')");
+    this.openDialogWithoutEscCloseButton = this.page.locator("button:has-text('Open Dialog without esc close')");
+    this.openDialogWithBackdropClickButton = this.page.locator("button:has-text('Open Dialog with backdrop click')");
+    this.openWithoutBackdropClickButton = this.page.locator("button:has-text('Open without backdrop click')");
     this.enterNameButton = this.page.locator("button:has-text('Enter Name')");
 
     // Dialog elements
@@ -70,12 +54,8 @@ export class DialogPage extends BasePage {
       hasText: "Template Dialog",
     });
     this.dialogBody = this.dialogCard.locator("nb-card-body");
-    this.dialogCloseButton = this.page.locator(
-      "button:has-text('Close Dialog')",
-    );
-    this.nameInput = this.page.locator(
-      "input[placeholder='Name'].nb-transition",
-    );
+    this.dialogCloseButton = this.page.locator("button:has-text('Close Dialog')");
+    this.nameInput = this.page.locator("input[placeholder='Name'].nb-transition");
     this.namesList = this.page.locator(".result-from-dialog ul");
     this.namesItems = this.page.locator(".result-from-dialog ul li");
     this.submitButton = this.page.locator("button:has-text('Submit')");

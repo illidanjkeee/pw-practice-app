@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from "@playwright/test";
+import { type Locator, type Page, expect } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 export class SmartTablePage extends BasePage {
@@ -125,8 +125,6 @@ export class SmartTablePage extends BasePage {
 
   // Get a specific row by ID
   getRowById(id: string): Locator {
-    return this.page
-      .getByRole("row", { name: id })
-      .filter({ has: this.page.locator("td").nth(1).getByText(id) });
+    return this.page.getByRole("row", { name: id }).filter({ has: this.page.locator("td").nth(1).getByText(id) });
   }
 }

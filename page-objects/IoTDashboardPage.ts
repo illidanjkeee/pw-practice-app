@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { type Locator, type Page, expect } from "@playwright/test";
 import { BasePage } from "./basePage";
 
 export class IoTDashboardPage extends BasePage {
@@ -92,13 +92,9 @@ export class IoTDashboardPage extends BasePage {
   constructor(page: Page) {
     super(page);
     // Light status card elements
-    this.lightTitle = page.locator(
-      "//ngx-status-card[.//div[@class='title h5' and text()='Light']]//div[@class='title h5']",
-    );
+    this.lightTitle = page.locator("//ngx-status-card[.//div[@class='title h5' and text()='Light']]//div[@class='title h5']");
     this.lightToggleButton = page.locator(".nb-lightbulb");
-    this.lightStatus = page.locator(
-      "//ngx-status-card[.//div[@class='title h5' and text()='Light']]//div[@class='status paragraph-2']",
-    );
+    this.lightStatus = page.locator("//ngx-status-card[.//div[@class='title h5' and text()='Light']]//div[@class='status paragraph-2']");
     // Roller Shades card elements
     this.rollerShadesTitle = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Roller Shades']]//div[@class='title h5']",
@@ -116,51 +112,27 @@ export class IoTDashboardPage extends BasePage {
       "//ngx-status-card[.//div[@class='title h5' and text()='Wireless Audio']]//div[@class='status paragraph-2']",
     );
     // Coffee Maker card elements
-    this.coffeeMakerTitle = page.locator(
-      "//ngx-status-card[.//div[@class='title h5' and text()='Coffee Maker']]//div[@class='title h5']",
-    );
+    this.coffeeMakerTitle = page.locator("//ngx-status-card[.//div[@class='title h5' and text()='Coffee Maker']]//div[@class='title h5']");
     this.coffeeMakerToggleButton = page.locator(".nb-coffee-maker");
     this.coffeeMakerStatus = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Coffee Maker']]//div[@class='status paragraph-2']",
     ); // Temperature component locators
     this.temperatureCard = page.locator("ngx-temperature nb-card");
-    this.temperatureTab = page
-      .locator("ngx-temperature .tab-link")
-      .filter({ hasText: "Temperature" });
-    this.humidityTab = page
-      .locator("ngx-temperature .tab-link")
-      .filter({ hasText: "Humidity" });
-    this.temperatureValue = page.locator(
-      "ngx-temperature .content-active .value.temperature",
-    );
-    this.humidityValue = page.locator(
-      "ngx-temperature .content-active .value.humidity",
-    );
-    this.temperaturePowerButton = page.locator(
-      "ngx-temperature .content-active .power-bg",
-    );
-    this.humidityPowerButton = page.locator(
-      "ngx-temperature .content-active .power-bg",
-    );
-    this.temperatureModeButtons = page.locator(
-      "ngx-temperature .content-active nb-radio-group nb-radio",
-    );
-    this.humidityModeButtons = page.locator(
-      "ngx-temperature .content-active nb-radio-group nb-radio",
-    );
-    this.temperatureSlider = page.locator(
-      "ngx-temperature .content-active ngx-temperature-dragger",
-    );
-    this.humiditySlider = page.locator(
-      "ngx-temperature .content-active ngx-temperature-dragger",
-    ); // Electricity component locators
+    this.temperatureTab = page.locator("ngx-temperature .tab-link").filter({ hasText: "Temperature" });
+    this.humidityTab = page.locator("ngx-temperature .tab-link").filter({ hasText: "Humidity" });
+    this.temperatureValue = page.locator("ngx-temperature .content-active .value.temperature");
+    this.humidityValue = page.locator("ngx-temperature .content-active .value.humidity");
+    this.temperaturePowerButton = page.locator("ngx-temperature .content-active .power-bg");
+    this.humidityPowerButton = page.locator("ngx-temperature .content-active .power-bg");
+    this.temperatureModeButtons = page.locator("ngx-temperature .content-active nb-radio-group nb-radio");
+    this.humidityModeButtons = page.locator("ngx-temperature .content-active nb-radio-group nb-radio");
+    this.temperatureSlider = page.locator("ngx-temperature .content-active ngx-temperature-dragger");
+    this.humiditySlider = page.locator("ngx-temperature .content-active ngx-temperature-dragger"); // Electricity component locators
     this.electricityCard = page.locator("ngx-electricity nb-card").first();
     this.electricityChart = page.locator("ngx-electricity-chart");
     this.electricityTable = page.locator("ngx-electricity nb-tabset");
     this.electricityTypeSelect = page.locator("ngx-electricity nb-select");
-    this.electricityConsumptionHeader = page
-      .locator("ngx-electricity")
-      .getByText("Electricity Consumption");
+    this.electricityConsumptionHeader = page.locator("ngx-electricity").getByText("Electricity Consumption");
     this.electricityTabs = page.locator("ngx-electricity nb-tab"); // Rooms component locators
     this.roomsCard = page.locator("ngx-rooms");
     this.roomSelector = page.locator("ngx-room-selector");
@@ -202,18 +174,14 @@ export class IoTDashboardPage extends BasePage {
     this.contactsComponent = page.locator("ngx-contacts");
     this.contactsList = page.locator("ngx-contacts nb-list");
     this.contactCallButton = page.locator("[data-testid='contact-call-btn']");
-    this.contactMessageButton = page.locator(
-      "[data-testid='contact-message-btn']",
-    );
+    this.contactMessageButton = page.locator("[data-testid='contact-message-btn']");
 
     // Kitten locators
     this.kittenCard = page.locator("ngx-kitten");
     this.kittenComponent = page.locator("ngx-kitten");
     this.kittenImage = page.locator("ngx-kitten img");
     this.kittenExpandedView = page.locator("[data-testid='kitten-expanded']");
-    this.kittenLoadingIndicator = page.locator(
-      "[data-testid='kitten-loading']",
-    );
+    this.kittenLoadingIndicator = page.locator("[data-testid='kitten-loading']");
   }
 
   async isLightToggledOn(): Promise<boolean> {
@@ -249,8 +217,7 @@ export class IoTDashboardPage extends BasePage {
 
   async isWirelessAudioToggledOn(): Promise<boolean> {
     await this.wirelessAudioToggleButton.waitFor({ state: "visible" });
-    const wirelessAudioStatusText =
-      (await this.wirelessAudioStatus.textContent()) || "";
+    const wirelessAudioStatusText = (await this.wirelessAudioStatus.textContent()) || "";
     return wirelessAudioStatusText === "ON";
   }
   async switchTheWirelessAudio(): Promise<void> {
@@ -265,8 +232,7 @@ export class IoTDashboardPage extends BasePage {
 
   async isCoffeeMakerToggledOn(): Promise<boolean> {
     await this.coffeeMakerToggleButton.waitFor({ state: "visible" });
-    const coffeeMakerStatusText =
-      (await this.coffeeMakerStatus.textContent()) || "";
+    const coffeeMakerStatusText = (await this.coffeeMakerStatus.textContent()) || "";
     return coffeeMakerStatusText === "ON";
   }
 
@@ -308,22 +274,12 @@ export class IoTDashboardPage extends BasePage {
   async toggleHumidityPower(): Promise<void> {
     await this.humidityPowerButton.click();
   }
-  async selectTemperatureMode(
-    mode: "cool" | "warm" | "heat" | "fan",
-  ): Promise<void> {
-    await this.temperatureModeButtons
-      .locator(`[value="${mode}"]`)
-      .locator("..")
-      .click();
+  async selectTemperatureMode(mode: "cool" | "warm" | "heat" | "fan"): Promise<void> {
+    await this.temperatureModeButtons.locator(`[value="${mode}"]`).locator("..").click();
   }
 
-  async selectHumidityMode(
-    mode: "cool" | "warm" | "heat" | "fan",
-  ): Promise<void> {
-    await this.humidityModeButtons
-      .locator(`[value="${mode}"]`)
-      .locator("..")
-      .click();
+  async selectHumidityMode(mode: "cool" | "warm" | "heat" | "fan"): Promise<void> {
+    await this.humidityModeButtons.locator(`[value="${mode}"]`).locator("..").click();
   }
   // Electricity component methods
   async isElectricityChartVisible(): Promise<boolean> {
@@ -332,7 +288,7 @@ export class IoTDashboardPage extends BasePage {
 
   async selectElectricityType(type: string): Promise<void> {
     await this.electricityTypeSelect.click();
-    await this.page.locator(`nb-option`).filter({ hasText: type }).click();
+    await this.page.locator("nb-option").filter({ hasText: type }).click();
   }
 
   async getElectricityTabsCount(): Promise<number> {
