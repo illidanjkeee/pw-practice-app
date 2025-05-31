@@ -84,6 +84,7 @@ export class IoTDashboardPage extends BasePage {
 
   // Kitten component elements
   readonly kittenCard: Locator;
+  readonly kittenCardTitle: Locator;
   readonly kittenComponent: Locator;
   readonly kittenImage: Locator;
   readonly kittenExpandedView: Locator;
@@ -91,10 +92,12 @@ export class IoTDashboardPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
+
     // Light status card elements
     this.lightTitle = page.locator("//ngx-status-card[.//div[@class='title h5' and text()='Light']]//div[@class='title h5']");
     this.lightToggleButton = page.locator(".nb-lightbulb");
     this.lightStatus = page.locator("//ngx-status-card[.//div[@class='title h5' and text()='Light']]//div[@class='status paragraph-2']");
+
     // Roller Shades card elements
     this.rollerShadesTitle = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Roller Shades']]//div[@class='title h5']",
@@ -103,6 +106,7 @@ export class IoTDashboardPage extends BasePage {
     this.rollerShadesStatus = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Roller Shades']]//div[@class='status paragraph-2']",
     );
+
     // Wireless Audio card elements
     this.wirelessAudioTitle = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Wireless Audio']]//div[@class='title h5']",
@@ -111,12 +115,15 @@ export class IoTDashboardPage extends BasePage {
     this.wirelessAudioStatus = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Wireless Audio']]//div[@class='status paragraph-2']",
     );
+
     // Coffee Maker card elements
     this.coffeeMakerTitle = page.locator("//ngx-status-card[.//div[@class='title h5' and text()='Coffee Maker']]//div[@class='title h5']");
     this.coffeeMakerToggleButton = page.locator(".nb-coffee-maker");
     this.coffeeMakerStatus = page.locator(
       "//ngx-status-card[.//div[@class='title h5' and text()='Coffee Maker']]//div[@class='status paragraph-2']",
-    ); // Temperature component locators
+    );
+
+    // Temperature component locators
     this.temperatureCard = page.locator("ngx-temperature nb-card");
     this.temperatureTab = page.locator("ngx-temperature .tab-link").filter({ hasText: "Temperature" });
     this.humidityTab = page.locator("ngx-temperature .tab-link").filter({ hasText: "Humidity" });
@@ -127,13 +134,17 @@ export class IoTDashboardPage extends BasePage {
     this.temperatureModeButtons = page.locator("ngx-temperature .content-active nb-radio-group nb-radio");
     this.humidityModeButtons = page.locator("ngx-temperature .content-active nb-radio-group nb-radio");
     this.temperatureSlider = page.locator("ngx-temperature .content-active ngx-temperature-dragger");
-    this.humiditySlider = page.locator("ngx-temperature .content-active ngx-temperature-dragger"); // Electricity component locators
+    this.humiditySlider = page.locator("ngx-temperature .content-active ngx-temperature-dragger");
+
+    // Electricity component locators
     this.electricityCard = page.locator("ngx-electricity nb-card").first();
     this.electricityChart = page.locator("ngx-electricity-chart");
     this.electricityTable = page.locator("ngx-electricity nb-tabset");
     this.electricityTypeSelect = page.locator("ngx-electricity nb-select");
     this.electricityConsumptionHeader = page.locator("ngx-electricity").getByText("Electricity Consumption");
-    this.electricityTabs = page.locator("ngx-electricity nb-tab"); // Rooms component locators
+    this.electricityTabs = page.locator("ngx-electricity nb-tab");
+
+    // Rooms component locators
     this.roomsCard = page.locator("ngx-rooms");
     this.roomSelector = page.locator("ngx-room-selector");
     this.roomContent = page.locator(".room-content");
@@ -162,7 +173,9 @@ export class IoTDashboardPage extends BasePage {
     this.trafficCard = page.locator("ngx-traffic nb-card");
     this.trafficChart = page.locator("ngx-traffic-chart");
     this.trafficTypeSelect = page.locator("ngx-traffic nb-select");
-    this.trafficHeader = page.locator("text=Traffic Consumption"); // Security cameras locators
+    this.trafficHeader = page.locator("text=Traffic Consumption");
+
+    // Security cameras locators
     this.securityCamerasCard = page.locator("ngx-security-cameras");
     this.securityCamerasComponent = page.locator("ngx-security-cameras");
     this.cameraViews = page.locator("ngx-security-cameras nb-card");
@@ -178,10 +191,9 @@ export class IoTDashboardPage extends BasePage {
 
     // Kitten locators
     this.kittenCard = page.locator("ngx-kitten");
+    this.kittenCardTitle = this.kittenCard.locator("//div[@class='h4' and text()='UI Kitten']");
     this.kittenComponent = page.locator("ngx-kitten");
-    this.kittenImage = page.locator("ngx-kitten img");
-    this.kittenExpandedView = page.locator("[data-testid='kitten-expanded']");
-    this.kittenLoadingIndicator = page.locator("[data-testid='kitten-loading']");
+    this.kittenImage = page.locator("ngx-kitten .picture");
   }
 
   async isLightToggledOn(): Promise<boolean> {
@@ -327,5 +339,10 @@ export class IoTDashboardPage extends BasePage {
 
   async isTrafficChartVisible(): Promise<boolean> {
     return await this.trafficChart.isVisible();
+  }
+
+  // Kitten component methods
+  async scrollToKittenCard(): Promise<void> {
+    await this.kittenCard.scrollIntoViewIfNeeded();
   }
 }
