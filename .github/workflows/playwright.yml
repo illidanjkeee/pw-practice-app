@@ -58,6 +58,13 @@ jobs:
           TOTAL_TESTS=$(echo "$TEST_LIST_OUTPUT" | grep -E "Total:|tests found" | tail -1 | grep -o '[0-9]\+' | head -1)
           echo "total=$TOTAL_TESTS" >> $GITHUB_OUTPUT
           echo "Total tests found: $TOTAL_TESTS"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:4200' }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          TEST_DELETE_EMAIL: ${{ secrets.TEST_DELETE_EMAIL }}
+          TEST_EDIT_EMAIL: ${{ secrets.TEST_EDIT_EMAIL }}
+          TEST_AGE_FILTERS: ${{ secrets.TEST_AGE_FILTERS }}
 
       - name: Calculate optimal shards
         id: set-matrix
