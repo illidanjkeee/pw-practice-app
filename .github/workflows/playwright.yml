@@ -21,26 +21,139 @@ env:
   NODE_VERSION: 18
 
 jobs:
+  # 🔢 Generate Dynamic Matrix Based on Total Tests
+  generate-shards-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      total-tests: ${{ steps.test-count.outputs.total }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Get Total Number of Tests
+        id: test-count
+        run: |
+          # Get test count for each browser if browser selection is specified
+          if [ "${{ github.event.inputs.browser }}" = "chromium" ]; then
+            TEST_LIST_OUTPUT=$(npx playwright test --list --project=chromium)
+          elif [ "${{ github.event.inputs.browser }}" = "firefox" ]; then
+            TEST_LIST_OUTPUT=$(npx playwright test --list --project=firefox)
+          else
+            TEST_LIST_OUTPUT=$(npx playwright test --list)
+          fi
+          
+          TOTAL_TESTS=$(echo "$TEST_LIST_OUTPUT" | grep -E "Total:|tests found" | tail -1 | grep -o '[0-9]\+' | head -1)
+          echo "total=$TOTAL_TESTS" >> $GITHUB_OUTPUT
+          echo "Total tests found: $TOTAL_TESTS"
+
+      - name: Calculate optimal shards
+        id: set-matrix
+        run: |
+          TOTAL_TESTS="${{ steps.test-count.outputs.total }}"
+          
+          # Calculate shards (aim for ~10-15 tests per shard for optimal parallelization)
+          SHARD_COUNT=$(( (TOTAL_TESTS + 12) / 13 ))
+          
+          # Ensure minimum 1 shard, maximum 20 shards
+          if [ "$SHARD_COUNT" -lt 1 ]; then
+            SHARD_COUNT=1
+          elif [ "$SHARD_COUNT" -gt 20 ]; then
+            SHARD_COUNT=20
+          fi
+          
+          echo "Calculated shard count: $SHARD_COUNT for $TOTAL_TESTS tests"
+          
+          # Generate matrix for browsers
+          BROWSERS='["chromium", "firefox"]'
+          if [ "${{ github.event.inputs.browser }}" != "all" ] && [ "${{ github.event.inputs.browser }}" != "" ]; then
+            BROWSERS='["${{ github.event.inputs.browser }}"]'
+          fi
+          
+          # Create matrix JSON
+          MATRIX=$(jq -cn \
+            --argjson browsers "$BROWSERS" \
+            --argjson shards "$SHARD_COUNT" \
+            '{
+              include: [
+                $browsers[] as $browser |
+                range(1; $shards + 1) as $shard |
+                {
+                  browser: $browser,
+                  "shard-index": $shard,
+                  "total-shards": $shards,
+                  project: (if $browser == "chromium" then "chromium" else "firefox" end)
+                }
+              ]
+            }')
+          
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  # 🧱 Build/Setup Step
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Validate environment variables
+        run: |
+          missing_secrets=false
+          if [ -z "${{ secrets.TEST_USER_EMAIL }}" ]; then
+            echo "::error::TEST_USER_EMAIL secret is not set"
+            missing_secrets=true
+          fi
+          if [ -z "${{ secrets.TEST_USER_PASSWORD }}" ]; then
+            echo "::error::TEST_USER_PASSWORD secret is not set"
+            missing_secrets=true
+          fi
+          if [ "$missing_secrets" = true ]; then
+            echo "::error::Required secrets are missing. Tests may fail."
+            exit 1
+          fi
+          echo "::notice::All required secrets are configured"
+
+      - name: Upload setup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-complete
+          path: package.json
+          retention-days: 1
+
+  # 🚀 Run Sharded Tests
   test:
-    name: "Tests (${{ matrix.browser }}-${{ matrix.shard }})"
+    name: "Tests (${{ matrix.browser }}-${{ matrix.shard-index }}/${{ matrix.total-shards }})"
+    needs: [generate-shards-matrix, setup]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        browser: [chromium, firefox]
-        shard: [1, 2, 3, 4]
-        include:
-          - browser: chromium
-            project: chromium
-          - browser: firefox
-            project: firefox
+      matrix: ${{ fromJSON(needs.generate-shards-matrix.outputs.matrix) }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -64,30 +177,12 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install ${{ matrix.browser }} --with-deps
 
-      - name: Validate environment variables
-        run: |
-          missing_secrets=false
-          if [ -z "${{ secrets.TEST_USER_EMAIL }}" ]; then
-            echo "::error::TEST_USER_EMAIL secret is not set"
-            missing_secrets=true
-          fi
-          if [ -z "${{ secrets.TEST_USER_PASSWORD }}" ]; then
-            echo "::error::TEST_USER_PASSWORD secret is not set"
-            missing_secrets=true
-          fi
-          if [ "$missing_secrets" = true ]; then
-            echo "::error::Required secrets are missing. Tests may fail."
-            exit 1
-          fi
-          echo "::notice::All required secrets are configured"
-
       - name: Start web server
         run: |
           npm run start:ci &
           SERVER_PID=$!
           echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
           
-          # Wait for server with better error handling
           if npx wait-on http://localhost:4200 --timeout 120000 --interval 1000; then
             echo "::notice::Server started successfully on http://localhost:4200"
           else
@@ -96,16 +191,10 @@ jobs:
             exit 1
           fi
 
-      - name: Run Playwright tests
+      - name: Run Playwright tests (Shard ${{ matrix.shard-index }}/${{ matrix.total-shards }})
         run: |
-          # Skip if browser doesn't match selection
-          if [ "${{ github.event.inputs.browser }}" != "all" ] && [ "${{ github.event.inputs.browser }}" != "" ] && [ "${{ github.event.inputs.browser }}" != "${{ matrix.browser }}" ]; then
-            echo "::notice::Skipping ${{ matrix.browser }} as it doesn't match selected browser (${{ github.event.inputs.browser }})"
-            exit 0
-          fi
-          
-          echo "::group::Running Playwright tests for ${{ matrix.browser }} (shard ${{ matrix.shard }}/4)"
-          npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob --shard=${{ matrix.shard }}/4
+          echo "::group::Running Playwright tests for ${{ matrix.browser }} (shard ${{ matrix.shard-index }}/${{ matrix.total-shards }})"
+          npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=blob --shard=${{ matrix.shard-index }}/${{ matrix.total-shards }}
           echo "::endgroup::"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:4200' }}
@@ -116,7 +205,6 @@ jobs:
           TEST_AGE_FILTERS: ${{ secrets.TEST_AGE_FILTERS }}
           CI: true
           NODE_ENV: test
-          PLAYWRIGHT_HTML_REPORT: playwright-report-${{ matrix.browser }}
 
       - name: Stop web server
         if: always()
@@ -124,15 +212,14 @@ jobs:
           if [ ! -z "$SERVER_PID" ]; then
             echo "::notice::Stopping server (PID: $SERVER_PID)"
             kill $SERVER_PID || true
-            # Wait a moment for graceful shutdown
             sleep 2
           fi
 
-      - name: Upload blob report (grouped by browser)
+      - name: Upload blob report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: blob-reports-${{ matrix.browser }}-shard-${{ matrix.shard }}
+          name: test-report-${{ matrix.browser }}-${{ matrix.shard-index }}
           path: blob-report/
           retention-days: 1
 
@@ -140,7 +227,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: traces-${{ matrix.browser }}-shard-${{ matrix.shard }}
+          name: traces-${{ matrix.browser }}-shard-${{ matrix.shard-index }}
           path: test-results/**/trace.zip
           retention-days: 7
 
@@ -148,14 +235,15 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-videos-${{ matrix.browser }}-shard-${{ matrix.shard }}
+          name: test-videos-${{ matrix.browser }}-shard-${{ matrix.shard-index }}
           path: test-results/**/video.*
           retention-days: 7
 
+  # 🧪 Merge Reports
   merge-reports:
     name: "Merge Reports"
-    if: always()
-    needs: test
+    if: always() && needs.test.result != 'cancelled' && needs.test.result != 'skipped'
+    needs: [test, generate-shards-matrix]
     runs-on: ubuntu-latest
     
     steps:
@@ -171,88 +259,23 @@ jobs:
       - name: Install dependencies
         run: npm ci --force
 
-      - name: Download blob reports
-        id: download-artifacts
+      - name: Download all shard reports
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
-          pattern: blob-reports-*
-          path: all-blob-reports
+          path: blob-reports
+          pattern: test-report-*
           merge-multiple: true
 
-      - name: Fallback download (individual artifacts)
-        if: steps.download-artifacts.outcome != 'success'
-        run: |
-          echo "::warning::Bulk artifact download failed, attempting individual downloads"
-          mkdir -p all-blob-reports
-          
-          # Get list of blob report artifacts
-          ARTIFACTS=$(gh api -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts \
-            | jq -r '.artifacts[] | select(.name | startswith("blob-reports-")) | .name')
-          
-          # Download each artifact individually
-          for ARTIFACT in $ARTIFACTS; do
-            echo "Downloading $ARTIFACT..."
-            if gh run download ${{ github.run_id }} -n "$ARTIFACT" -D "all-blob-reports/$ARTIFACT" 2>/dev/null; then
-              echo "Successfully downloaded $ARTIFACT"
-            else
-              echo "::warning::Failed to download $ARTIFACT"
-            fi
-          done
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-      - name: Verify blob reports
-        id: verify-reports
-        run: |
-          echo "::group::Blob reports verification"
-          if [ ! -d "all-blob-reports" ]; then
-            echo "::warning::No blob reports directory found, creating empty directory"
-            mkdir -p all-blob-reports
-            echo "reports_found=false" >> $GITHUB_OUTPUT
-            echo "::endgroup::"
-            exit 0
-          fi
-          
-          # Look for both zip files and extracted directories
-          blob_count=$(find all-blob-reports -type f -name "*.zip" | wc -l)
-          dir_count=$(find all-blob-reports -type d -mindepth 1 | wc -l)
-          
-          echo "Found $blob_count blob report files and $dir_count directories"
-          
-          if [ "$blob_count" -eq 0 ] && [ "$dir_count" -eq 0 ]; then
-            echo "::warning::No blob reports found"
-            echo "reports_found=false" >> $GITHUB_OUTPUT
-            echo "::endgroup::"
-            exit 0
-          fi
-          
-          echo "Blob report files:"
-          find all-blob-reports -type f | sort
-          echo "reports_found=true" >> $GITHUB_OUTPUT
-          echo "::endgroup::"
-
-      - name: Merge into HTML Report
-        if: steps.verify-reports.outputs.reports_found == 'true'
+      - name: Merge to HTML Report
         run: |
           echo "::group::Merging reports"
-          # Create empty report directory in case merge fails
           mkdir -p playwright-report
           
-          # Attempt to merge reports with error handling
-          if ! npx playwright merge-reports --reporter html ./all-blob-reports; then
+          if ! npx playwright merge-reports --reporter html ./blob-reports; then
             echo "::warning::Report merging failed, creating fallback report"
-            echo "<html><head><title>Test Report</title></head><body><h1>Test Report Generation Failed</h1><p>The test report could not be generated due to artifact download or merge issues. Please check individual test reports.</p></body></html>" > playwright-report/index.html
+            echo "<html><head><title>Test Report</title></head><body><h1>Test Report Generation Failed</h1><p>The test report could not be generated due to merge issues. Please check individual test reports.</p><p>Total tests: ${{ needs.generate-shards-matrix.outputs.total-tests }}</p></body></html>" > playwright-report/index.html
           fi
           echo "::endgroup::"
-
-      - name: Create fallback report
-        if: steps.verify-reports.outputs.reports_found != 'true'
-        run: |
-          echo "::warning::Creating fallback report due to missing blob reports"
-          mkdir -p playwright-report
-          echo "<html><head><title>Test Report</title></head><body><h1>Test Report Not Available</h1><p>The test report could not be generated because no test artifacts were found. Please check the GitHub Actions logs for more information.</p></body></html>" > playwright-report/index.html
 
       - name: Upload merged HTML report
         uses: actions/upload-artifact@v4
@@ -267,16 +290,15 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const path = require('path');
-            
-            // Check if merged report exists
-            const reportExists = fs.existsSync('playwright-report/index.html');
             const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const reportExists = fs.existsSync('playwright-report/index.html');
+            const totalTests = '${{ needs.generate-shards-matrix.outputs.total-tests }}';
             
             const comment = `## 🎭 Playwright Test Results
             
             **Test run completed for commit:** \`${{ github.sha }}\`
             **Browser selection:** ${{ github.event.inputs.browser || 'all' }}
+            **Total tests:** ${totalTests}
             **Run attempt:** ${{ github.run_attempt }}
             
             ${reportExists ? '✅' : '❌'} **Merged Report:** ${reportExists ? 'Available' : 'Failed to generate'}
@@ -286,8 +308,7 @@ jobs:
             - 🔍 [Test Traces](${runUrl}) (Download: \`traces-*-shard-*\` - only for failed tests)
             - 🎬 [Test Videos](${runUrl}) (Download: \`test-videos-*-shard-*\` - only for failed tests)
             
-            **Browsers tested:** Chromium, Firefox
-            **Total shards:** 8 (4 per browser)
+            **Dynamic sharding:** Optimized based on test count
             
             ---
             *View detailed results and download artifacts from the [Actions run](${runUrl})*
@@ -299,3 +320,23 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
+
+      - name: Fail merge job if any test job failed
+        run: |
+          if [[ "${{ needs.test.result }}" == "failure" ]]; then
+            echo "Some test jobs failed, failing this merge job for visibility."
+            exit 1
+          fi
+
+  # 🧹 Cleanup Artifacts
+  cleanup:
+    if: success() && needs.test.result == 'success'
+    needs: [merge-reports, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete intermediate artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: |
+            test-report-*
+            setup-complete
