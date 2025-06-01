@@ -132,7 +132,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: blob-reports-${{ matrix.browser }}
+          name: blob-reports-${{ matrix.browser }}-shard-${{ matrix.shard }}
           path: blob-report/
           retention-days: 1
 
@@ -140,7 +140,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: traces-${{ matrix.browser }}
+          name: traces-${{ matrix.browser }}-shard-${{ matrix.shard }}
           path: test-results/**/trace.zip
           retention-days: 7
 
@@ -148,7 +148,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-videos-${{ matrix.browser }}
+          name: test-videos-${{ matrix.browser }}-shard-${{ matrix.shard }}
           path: test-results/**/video.*
           retention-days: 7
 
@@ -283,8 +283,8 @@ jobs:
             
             ### 📊 Available Reports:
             - 📋 [Merged HTML Report](${runUrl}) (Download: \`playwright-report--attempt-${{ github.run_attempt }}\`)
-            - 🔍 [Test Traces](${runUrl}) (Download: \`traces-*\` - only for failed tests)
-            - 🎬 [Test Videos](${runUrl}) (Download: \`test-videos-*\` - only for failed tests)
+            - 🔍 [Test Traces](${runUrl}) (Download: \`traces-*-shard-*\` - only for failed tests)
+            - 🎬 [Test Videos](${runUrl}) (Download: \`test-videos-*-shard-*\` - only for failed tests)
             
             **Browsers tested:** Chromium, Firefox
             **Total shards:** 8 (4 per browser)
