@@ -36,6 +36,7 @@ npm-debug.log
 testem.log
 /typings
 /docs
+.copilot-review-instructions.md
 
 # e2e
 /e2e/*.js

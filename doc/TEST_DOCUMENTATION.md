@@ -1338,7 +1338,7 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 | ------------ | -------------------------- | ------ | ------------------------ | -------- | ---------------------- |
 | IOT-TH-001   | Theme color changes        | ✅     | `themeSelection.spec.ts` | High     | Automated - line 9-25  |
 | IOT-TH-002   | Theme dropdown content     | ✅     | `themeSelection.spec.ts` | Medium   | Automated - line 35-48 |
-| IOT-TH-003   | Theme persistence          | ❌     | N/A                      | Medium   | Needs automation       |
+| IOT-TH-003   | Theme persistence          | ✅     | `themeSelection.spec.ts` | Medium   | Automated - line 50-93   |
 | IOT-TH-004   | Component theme adaptation | ❌     | N/A                      | Medium   | Needs automation       |
 
 #### 13.5.11 Navigation
@@ -1401,20 +1401,20 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 | **Forms & Controls**  | 12               | 6         | 3      | 1       | 0           | 2       | 50%          |
 | **Modal & Overlays**  | 21               | 14        | 3      | 0       | 0           | 4       | 67%          |
 | **Tables & Data**     | 10               | 3         | 2      | 0       | 0           | 5       | 30%          |
-| **IoT Dashboard**     | 65               | 58        | 0      | 1       | 0           | 6       | 89%          |
+| **IoT Dashboard**     | 65               | 59        | 0      | 1       | 0           | 5       | 91%          |
 | **Performance**       | 4                | 0         | 0      | 1       | 0           | 3       | 0%           |
 | **Accessibility**     | 4                | 0         | 4      | 0       | 0           | 0       | 0%           |
 | **Cross-Browser**     | 3                | 3         | 0      | 0       | 0           | 0       | 100%         |
 | **Mobile Responsive** | 4                | 0         | 1      | 3       | 0           | 0       | 0%           |
 | **Security**          | 3                | 0         | 2      | 0       | 0           | 1       | 0%           |
-| **TOTAL**             | **126**          | **84**    | **15** | **6**   | **0**       | **21**  | **67%**      |
+| **TOTAL**             | **126**          | **85**    | **15** | **6**   | **0**       | **20**  | **67%**      |
 
 #### 13.11.2 Priority-based Coverage
 
 | Priority   | Total Test Cases | Automated | Manual | Automation % |
 | ---------- | ---------------- | --------- | ------ | ------------ |
 | **High**   | 72               | 55        | 10     | 76%          |
-| **Medium** | 44               | 27        | 4      | 61%          |
+| **Medium** | 44               | 28        | 4      | 64%          |
 | **Low**    | 10               | 2         | 1      | 20%          |
 
 #### 13.11.3 Test File Coverage Analysis
@@ -1434,7 +1434,7 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 | `ElectricityTests.spec.ts`  | 10                 | Electricity monitoring  | ✅ Excellent       |
 | `SolarTests.spec.ts`        | 10                 | Solar energy            | ✅ Excellent       |
 | `TrafficTests.spec.ts`      | 12                 | Traffic monitoring      | ✅ Excellent       |
-| `themeSelection.spec.ts`    | 2                  | Theme switching         | ⚠️ Needs expansion |
+| `themeSelection.spec.ts`    | 3                  | Theme switching         | ✅ Good            |
 | `navigationTests.spec.ts`   | 1                  | Page navigation         | ⚠️ Needs expansion |
 
 #### 13.11.4 Automation Gaps Analysis
@@ -1450,7 +1450,6 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 
 1. **Modal interactions** - Advanced modal behaviors need coverage
 2. **Responsive design** - Systematic viewport testing needed
-3. **Theme persistence** - Theme state management testing
 
 **Low Priority Gaps:**
 
@@ -1469,7 +1468,7 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 **Short-term (Next Month):**
 
 1. 🔄 Add comprehensive accessibility testing
-2. 🔄 Implement theme persistence testing
+2. ✅ Implement theme persistence testing
 3. 🔄 Expand responsive design test coverage
 4. 🔄 Add security validation tests
 

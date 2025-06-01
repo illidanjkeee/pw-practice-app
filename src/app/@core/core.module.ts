@@ -12,6 +12,7 @@ import {
   SeoService,
   StateService,
 } from './utils';
+import { ThemeStorageService } from './services/theme-storage.service';
 import { UserData } from './data/users';
 import { ElectricityData } from './data/electricity';
 import { SmartTableData } from './data/smart-table';
@@ -103,6 +104,7 @@ export class NbSimpleRoleProvider extends NbRoleProvider {
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
+  ThemeStorageService,
   ...NbAuthModule.forRoot({
 
     strategies: [
