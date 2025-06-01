@@ -766,7 +766,47 @@ tests/
   3. Verify prediction accuracy
 - **Expected Results**: Traffic predictions show realistic data
 
-### 4.7 Navigation Tests
+### 4.7 Kitten Component Tests
+
+#### Existing Test Cases
+
+**Test Case 1: Kitten Card Display**
+
+- **Description**: Tests the Kitten card visibility and title
+- **Steps**:
+  1. Navigate to IoT Dashboard
+  2. Scroll to the Kitten card
+  3. Verify the card is visible
+  4. Verify the card title shows "UI Kitten"
+- **Expected Results**: Kitten card is visible with correct title
+
+**Test Case 2: Kitten Description Text**
+
+- **Description**: Tests the content of the Kitten card description
+- **Steps**:
+  1. Navigate to IoT Dashboard
+  2. Verify the description text is correct
+- **Expected Results**: Description text matches expected content
+
+**Test Case 3: Kitten Image Verification**
+
+- **Description**: Tests the Kitten card image
+- **Steps**:
+  1. Navigate to IoT Dashboard
+  2. Verify the image is visible
+  3. Verify the image has the correct source URL
+- **Expected Results**: Image is displayed with correct styling and source
+
+**Test Case 4: Kitten Links Verification**
+
+- **Description**: Tests the Kitten card links
+- **Steps**:
+  1. Navigate to IoT Dashboard
+  2. Verify the links are visible
+  3. Verify each link has the correct URL
+- **Expected Results**: All links have the correct href attributes
+
+### 4.8 Navigation Tests
 
 #### Existing Test Cases
 
@@ -1332,7 +1372,16 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 | IOT-TR-013   | Traffic flow analysis           | ❌     | N/A                    | Medium   | Needs automation         |
 | IOT-TR-014   | Traffic prediction              | ❌     | N/A                    | Low      | Future enhancement       |
 
-#### 13.5.10 Theme Selection
+#### 13.5.10 Kitten Component
+
+| Test Case ID | Test Case Name                 | Status | Spec File                     | Priority | Notes                  |
+| ------------ | ------------------------------ | ------ | ----------------------------- | -------- | ---------------------- |
+| IOT-K-001    | Kitten card display            | ✅     | `kittenIntegrationTests.spec.ts` | High     | Automated - line 7-17  |
+| IOT-K-002    | Kitten card description        | ✅     | `kittenIntegrationTests.spec.ts` | Medium   | Automated - line 19-26 |
+| IOT-K-003    | Kitten card image verification | ✅     | `kittenIntegrationTests.spec.ts` | Medium   | Automated - line 28-35 |
+| IOT-K-004    | Kitten card links verification | ✅     | `kittenIntegrationTests.spec.ts` | High     | Automated - line 37-55 |
+
+#### 13.5.11 Theme Selection
 
 | Test Case ID | Test Case Name             | Status | Spec File                | Priority | Notes                  |
 | ------------ | -------------------------- | ------ | ------------------------ | -------- | ---------------------- |
@@ -1401,41 +1450,42 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 | **Forms & Controls**  | 12               | 6         | 3      | 1       | 0           | 2       | 50%          |
 | **Modal & Overlays**  | 21               | 14        | 3      | 0       | 0           | 4       | 67%          |
 | **Tables & Data**     | 10               | 3         | 2      | 0       | 0           | 5       | 30%          |
-| **IoT Dashboard**     | 65               | 59        | 0      | 1       | 0           | 5       | 91%          |
+| **IoT Dashboard**     | 69               | 63        | 0      | 1       | 0           | 5       | 91%          |
 | **Performance**       | 4                | 0         | 0      | 1       | 0           | 3       | 0%           |
 | **Accessibility**     | 4                | 0         | 4      | 0       | 0           | 0       | 0%           |
 | **Cross-Browser**     | 3                | 3         | 0      | 0       | 0           | 0       | 100%         |
 | **Mobile Responsive** | 4                | 0         | 1      | 3       | 0           | 0       | 0%           |
 | **Security**          | 3                | 0         | 2      | 0       | 0           | 1       | 0%           |
-| **TOTAL**             | **126**          | **85**    | **15** | **6**   | **0**       | **20**  | **67%**      |
+| **TOTAL**             | **130**          | **89**    | **15** | **6**   | **0**       | **20**  | **68%**      |
 
 #### 13.11.2 Priority-based Coverage
 
 | Priority   | Total Test Cases | Automated | Manual | Automation % |
 | ---------- | ---------------- | --------- | ------ | ------------ |
-| **High**   | 72               | 55        | 10     | 76%          |
-| **Medium** | 44               | 28        | 4      | 64%          |
+| **High**   | 74               | 57        | 10     | 77%          |
+| **Medium** | 46               | 30        | 4      | 65%          |
 | **Low**    | 10               | 2         | 1      | 20%          |
 
 #### 13.11.3 Test File Coverage Analysis
 
-| Spec File                   | Test Cases Covered | Component Coverage      | Status             |
-| --------------------------- | ------------------ | ----------------------- | ------------------ |
-| `formLayoutsPage.spec.ts`   | 4                  | Forms, Input validation | ✅ Good            |
-| `datepickerPage.spec.ts`    | 2                  | Date selection          | ✅ Good            |
-| `dialogPage.spec.ts`        | 7                  | Dialog modals           | ✅ Excellent       |
-| `windowPage.spec.ts`        | 6                  | Window modals           | ✅ Good            |
-| `tooltipPage.spec.ts`       | 1                  | Tooltips                | ⚠️ Needs expansion |
-| `toastrPage.spec.ts`        | 1                  | Toast notifications     | ⚠️ Needs expansion |
-| `smartTablePage.spec.ts`    | 3                  | Data tables             | ⚠️ Needs expansion |
-| `IotDashboardTests.spec.ts` | 12                 | IoT device controls     | ✅ Excellent       |
-| `TemperatureTests.spec.ts`  | 10                 | Temperature/Humidity    | ✅ Excellent       |
-| `WeatherTests.spec.ts`      | 10                 | Weather component       | ✅ Excellent       |
-| `ElectricityTests.spec.ts`  | 10                 | Electricity monitoring  | ✅ Excellent       |
-| `SolarTests.spec.ts`        | 10                 | Solar energy            | ✅ Excellent       |
-| `TrafficTests.spec.ts`      | 12                 | Traffic monitoring      | ✅ Excellent       |
-| `themeSelection.spec.ts`    | 3                  | Theme switching         | ✅ Good            |
-| `navigationTests.spec.ts`   | 1                  | Page navigation         | ⚠️ Needs expansion |
+| Spec File                        | Test Cases Covered | Component Coverage      | Status             |
+| -------------------------------- | ------------------ | ----------------------- | ------------------ |
+| `formLayoutsPage.spec.ts`        | 4                  | Forms, Input validation | ✅ Good            |
+| `datepickerPage.spec.ts`         | 2                  | Date selection          | ✅ Good            |
+| `dialogPage.spec.ts`             | 7                  | Dialog modals           | ✅ Excellent       |
+| `windowPage.spec.ts`             | 6                  | Window modals           | ✅ Good            |
+| `tooltipPage.spec.ts`            | 1                  | Tooltips                | ⚠️ Needs expansion |
+| `toastrPage.spec.ts`             | 1                  | Toast notifications     | ⚠️ Needs expansion |
+| `smartTablePage.spec.ts`         | 3                  | Data tables             | ⚠️ Needs expansion |
+| `IotDashboardTests.spec.ts`      | 12                 | IoT device controls     | ✅ Excellent       |
+| `TemperatureTests.spec.ts`       | 10                 | Temperature/Humidity    | ✅ Excellent       |
+| `WeatherTests.spec.ts`           | 10                 | Weather component       | ✅ Excellent       |
+| `ElectricityTests.spec.ts`       | 10                 | Electricity monitoring  | ✅ Excellent       |
+| `SolarTests.spec.ts`             | 10                 | Solar energy            | ✅ Excellent       |
+| `TrafficTests.spec.ts`           | 12                 | Traffic monitoring      | ✅ Excellent       |
+| `kittenIntegrationTests.spec.ts` | 4                  | Kitten card component   | ✅ Good            |
+| `themeSelection.spec.ts`         | 3                  | Theme switching         | ✅ Good            |
+| `navigationTests.spec.ts`        | 1                  | Page navigation         | ⚠️ Needs expansion |
 
 #### 13.11.4 Automation Gaps Analysis
 

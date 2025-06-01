@@ -87,8 +87,8 @@ export class IoTDashboardPage extends BasePage {
   readonly kittenCardTitle: Locator;
   readonly kittenComponent: Locator;
   readonly kittenImage: Locator;
-  readonly kittenExpandedView: Locator;
-  readonly kittenLoadingIndicator: Locator;
+  readonly kittenDescription: Locator;
+  readonly kittenLinks: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -194,6 +194,8 @@ export class IoTDashboardPage extends BasePage {
     this.kittenCardTitle = this.kittenCard.locator("//div[@class='h4' and text()='UI Kitten']");
     this.kittenComponent = page.locator("ngx-kitten");
     this.kittenImage = page.locator("ngx-kitten .picture");
+    this.kittenDescription = page.locator("ngx-kitten .description");
+    this.kittenLinks = page.locator("ngx-kitten a");
   }
 
   async isLightToggledOn(): Promise<boolean> {
