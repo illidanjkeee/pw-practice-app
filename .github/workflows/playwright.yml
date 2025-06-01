@@ -31,14 +31,14 @@ env:
 
 jobs:
   test:
-    name: "Tests (${{ matrix.browser }})"
+    name: "Tests (${{ matrix.browser }}-${{ matrix.shard }})"
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, firefox]
+        shard: [1, 2, 3, 4]
         include:
           - browser: chromium
             project: chromium
@@ -88,14 +88,14 @@ jobs:
           SERVER_PID=$!
           echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
           npx wait-on http://localhost:4200 --timeout 120000 --interval 1000
-          echo "::notice::Server started successfully on http://localhost:4200"
+                    echo "::notice::Server started successfully on http://localhost:4200"
 
       - name: Run Playwright tests
         run: |
           if [ "${{ github.event.inputs.browser }}" = "all" ] || [ -z "${{ github.event.inputs.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob --shard=${{ matrix.shard }}/4
           elif [ "${{ github.event.inputs.browser }}" = "${{ matrix.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob
+            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob --shard=${{ matrix.shard }}/4
           else
             echo "Skipping ${{ matrix.browser }} as it doesn't match selected browser"
             exit 0
@@ -122,7 +122,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: html-report-${{ matrix.browser }}
+          name: html-report-${{ matrix.browser }}-${{ matrix.shard }}
           path: playwright-report-${{ matrix.browser }}/
           retention-days: 14
 
@@ -130,7 +130,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: blob-report-${{ matrix.browser }}
+          name: blob-report-${{ matrix.browser }}-${{ matrix.shard }}
           path: blob-report/
           retention-days: 1
 
@@ -138,7 +138,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: traces-${{ matrix.browser }}
+          name: traces-${{ matrix.browser }}-${{ matrix.shard }}
           path: test-results/**/trace.zip
           retention-days: 14
 
@@ -146,7 +146,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-videos-${{ matrix.browser }}
+          name: test-videos-${{ matrix.browser }}-${{ matrix.shard }}
           path: test-results/
           retention-days: 7
 
