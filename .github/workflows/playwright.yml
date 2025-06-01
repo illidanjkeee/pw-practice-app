@@ -108,36 +108,6 @@ jobs:
           
           echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
 
-  # 🧱 Build Application Once
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci --force
-
-      - name: Build application
-        run: npm run build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-build
-          path: |
-            dist/
-            .next/
-            build/
-          include-hidden-files: true
-          retention-days: 1
-
   # 🧱 Build/Setup Step
   setup:
     runs-on: ubuntu-latest
@@ -178,10 +148,54 @@ jobs:
           path: package.json
           retention-days: 1
 
+  # 🌐 Start Web Server (Single Instance for All Shards)
+  start-server:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    outputs:
+      server-url: ${{ steps.start.outputs.url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --force
+
+      - name: Start application server
+        id: start
+        run: |
+          echo "Starting application server..."
+          npm start &
+          SERVER_PID=$!
+          echo "server-pid=$SERVER_PID" >> $GITHUB_OUTPUT
+          echo "url=http://localhost:4200" >> $GITHUB_OUTPUT
+          
+          # Wait for server to be ready
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:4200 >/dev/null 2>&1; then
+              echo "Server is ready!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+          
+          # Keep server running for the duration of tests
+          echo "Server started with PID: $SERVER_PID"
+          echo "Keeping server alive..."
+          wait $SERVER_PID
+
   # 🚀 Run Sharded Tests
   test:
     name: "Tests (${{ matrix.browser }}-${{ matrix.shard-index }}/${{ matrix.total-shards }})"
-    needs: [generate-shards-matrix, setup, build]
+    needs: [generate-shards-matrix, setup, start-server]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -201,12 +215,6 @@ jobs:
       - name: Install dependencies
         run: npm ci --force
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-build
-          path: .
-
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -223,10 +231,11 @@ jobs:
       - name: Run Playwright tests (Shard ${{ matrix.shard-index }}/${{ matrix.total-shards }})
         run: |
           echo "::group::Running Playwright tests for ${{ matrix.browser }} (shard ${{ matrix.shard-index }}/${{ matrix.total-shards }})"
+          echo "Using BASE_URL: ${{ needs.start-server.outputs.server-url }}"
           npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=blob --shard=${{ matrix.shard-index }}/${{ matrix.total-shards }}
           echo "::endgroup::"
         env:
-          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:4200' }}
+          BASE_URL: ${{ needs.start-server.outputs.server-url }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
           TEST_DELETE_EMAIL: ${{ secrets.TEST_DELETE_EMAIL }}
@@ -234,15 +243,6 @@ jobs:
           TEST_AGE_FILTERS: ${{ secrets.TEST_AGE_FILTERS }}
           CI: true
           NODE_ENV: test
-
-      - name: Stop web server
-        if: always()
-        run: |
-          if [ ! -z "$SERVER_PID" ]; then
-            echo "::notice::Stopping server (PID: $SERVER_PID)"
-            kill $SERVER_PID || true
-            sleep 2
-          fi
 
       - name: Upload blob report
         if: always()
@@ -369,4 +369,3 @@ jobs:
           name: |
             test-report-*
             setup-complete
-            app-build
