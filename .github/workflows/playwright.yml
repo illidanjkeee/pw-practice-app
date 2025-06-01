@@ -128,31 +128,13 @@ jobs:
             sleep 2
           fi
 
-      - name: Upload HTML report
-        if: always()
-        run: |
-          # Create browser-specific directory
-          mkdir -p playwright-reports/${{ matrix.browser }}
-          # Move the report to the browser directory
-          mv playwright-report-${{ matrix.browser }}/* playwright-reports/${{ matrix.browser }}/shard-${{ matrix.shard }}/
-
-      - name: Upload HTML reports (per browser)
+      - name: Upload blob report (grouped by browser)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: html-report-${{ matrix.browser }}
-          path: playwright-reports/${{ matrix.browser }}/
-          retention-days: 7
-          if-no-files-found: ignore
-
-      - name: Upload blob report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: blob-report-${{ matrix.browser }}
+          name: blob-reports-${{ matrix.browser }}
           path: blob-report/
           retention-days: 1
-          if-no-files-found: ignore
 
       - name: Upload traces on failure
         if: failure()
@@ -161,7 +143,14 @@ jobs:
           name: traces-${{ matrix.browser }}
           path: test-results/**/trace.zip
           retention-days: 7
-          if-no-files-found: ignore
+
+      - name: Upload test videos on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos-${{ matrix.browser }}
+          path: test-results/**/video.*
+          retention-days: 7
 
   merge-reports:
     name: "Merge Reports"
@@ -187,26 +176,60 @@ jobs:
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          pattern: blob-report-*
+          pattern: blob-reports-*
           path: all-blob-reports
           merge-multiple: true
 
-      - name: Verify and prepare reports
+      - name: Fallback download (individual artifacts)
+        if: steps.download-artifacts.outcome != 'success'
+        run: |
+          echo "::warning::Bulk artifact download failed, attempting individual downloads"
+          mkdir -p all-blob-reports
+          
+          # Get list of blob report artifacts
+          ARTIFACTS=$(gh api -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts \
+            | jq -r '.artifacts[] | select(.name | startswith("blob-reports-")) | .name')
+          
+          # Download each artifact individually
+          for ARTIFACT in $ARTIFACTS; do
+            echo "Downloading $ARTIFACT..."
+            if gh run download ${{ github.run_id }} -n "$ARTIFACT" -D "all-blob-reports/$ARTIFACT" 2>/dev/null; then
+              echo "Successfully downloaded $ARTIFACT"
+            else
+              echo "::warning::Failed to download $ARTIFACT"
+            fi
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Verify blob reports
         id: verify-reports
         run: |
-          echo "::group::Reports verification"
-          
-          # Check for blob reports
-          if [ ! -d "all-blob-reports" ] || [ -z "$(ls -A all-blob-reports 2>/dev/null)" ]; then
-            echo "::warning::No blob reports found"
+          echo "::group::Blob reports verification"
+          if [ ! -d "all-blob-reports" ]; then
+            echo "::warning::No blob reports directory found, creating empty directory"
+            mkdir -p all-blob-reports
             echo "reports_found=false" >> $GITHUB_OUTPUT
+            echo "::endgroup::"
             exit 0
           fi
-
-          # Flatten directory structure if needed
-          find all-blob-reports -type f -name "*.zip" -exec mv {} all-blob-reports/ \;
           
-          echo "Found $(ls -1 all-blob-reports/*.zip 2>/dev/null | wc -l) blob report files"
+          # Look for both zip files and extracted directories
+          blob_count=$(find all-blob-reports -type f -name "*.zip" | wc -l)
+          dir_count=$(find all-blob-reports -type d -mindepth 1 | wc -l)
+          
+          echo "Found $blob_count blob report files and $dir_count directories"
+          
+          if [ "$blob_count" -eq 0 ] && [ "$dir_count" -eq 0 ]; then
+            echo "::warning::No blob reports found"
+            echo "reports_found=false" >> $GITHUB_OUTPUT
+            echo "::endgroup::"
+            exit 0
+          fi
+          
+          echo "Blob report files:"
+          find all-blob-reports -type f | sort
           echo "reports_found=true" >> $GITHUB_OUTPUT
           echo "::endgroup::"
 
@@ -214,21 +237,29 @@ jobs:
         if: steps.verify-reports.outputs.reports_found == 'true'
         run: |
           echo "::group::Merging reports"
+          # Create empty report directory in case merge fails
           mkdir -p playwright-report
           
+          # Attempt to merge reports with error handling
           if ! npx playwright merge-reports --reporter html ./all-blob-reports; then
             echo "::warning::Report merging failed, creating fallback report"
-            echo "<html><body><h1>Test Report Generation Failed</h1></body></html>" > playwright-report/index.html
+            echo "<html><head><title>Test Report</title></head><body><h1>Test Report Generation Failed</h1><p>The test report could not be generated due to artifact download or merge issues. Please check individual test reports.</p></body></html>" > playwright-report/index.html
           fi
           echo "::endgroup::"
 
-      - name: Upload merged report
+      - name: Create fallback report
+        if: steps.verify-reports.outputs.reports_found != 'true'
+        run: |
+          echo "::warning::Creating fallback report due to missing blob reports"
+          mkdir -p playwright-report
+          echo "<html><head><title>Test Report</title></head><body><h1>Test Report Not Available</h1><p>The test report could not be generated because no test artifacts were found. Please check the GitHub Actions logs for more information.</p></body></html>" > playwright-report/index.html
+
+      - name: Upload merged HTML report
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report--attempt-${{ github.run_attempt }}
           path: playwright-report/
-          retention-days: 30
-          if-no-files-found: warn
+          retention-days: 14
 
       - name: Comment PR with test results
         if: github.event_name == 'pull_request' && always()
@@ -251,12 +282,12 @@ jobs:
             ${reportExists ? '✅' : '❌'} **Merged Report:** ${reportExists ? 'Available' : 'Failed to generate'}
             
             ### 📊 Available Reports:
-            - 📋 [Merged HTML Report](${runUrl}) (Download: \`merged-html-report--attempt-${{ github.run_attempt }}\`)
-            - 🔍 [Individual Browser Reports](${runUrl}) (Download: \`html-report-*\`)
-            - 🎬 [Test Videos](${runUrl}) (Download: \`test-videos-*\` - only if tests failed)
-            - 📊 [Traces](${runUrl}) (Download: \`traces-*\`)
+            - 📋 [Merged HTML Report](${runUrl}) (Download: \`playwright-report--attempt-${{ github.run_attempt }}\`)
+            - 🔍 [Test Traces](${runUrl}) (Download: \`traces-*\` - only for failed tests)
+            - 🎬 [Test Videos](${runUrl}) (Download: \`test-videos-*\` - only for failed tests)
             
             **Browsers tested:** Chromium, Firefox
+            **Total shards:** 8 (4 per browser)
             
             ---
             *View detailed results and download artifacts from the [Actions run](${runUrl})*
