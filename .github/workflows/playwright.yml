@@ -16,15 +16,6 @@ on:
           - all
           - chromium
           - firefox
-          - webkit
-      environment:
-        description: 'Environment to test against'
-        required: false
-        default: 'local'
-        type: choice
-        options:
-          - local
-          - staging
 
 env:
   NODE_VERSION: 18
@@ -75,31 +66,47 @@ jobs:
 
       - name: Validate environment variables
         run: |
+          missing_secrets=false
           if [ -z "${{ secrets.TEST_USER_EMAIL }}" ]; then
-            echo "::warning::TEST_USER_EMAIL secret is not set"
+            echo "::error::TEST_USER_EMAIL secret is not set"
+            missing_secrets=true
           fi
           if [ -z "${{ secrets.TEST_USER_PASSWORD }}" ]; then
-            echo "::warning::TEST_USER_PASSWORD secret is not set"
+            echo "::error::TEST_USER_PASSWORD secret is not set"
+            missing_secrets=true
           fi
+          if [ "$missing_secrets" = true ]; then
+            echo "::error::Required secrets are missing. Tests may fail."
+            exit 1
+          fi
+          echo "::notice::All required secrets are configured"
 
       - name: Start web server
         run: |
           npm run start:ci &
           SERVER_PID=$!
           echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
-          npx wait-on http://localhost:4200 --timeout 120000 --interval 1000
-                    echo "::notice::Server started successfully on http://localhost:4200"
+          
+          # Wait for server with better error handling
+          if npx wait-on http://localhost:4200 --timeout 120000 --interval 1000; then
+            echo "::notice::Server started successfully on http://localhost:4200"
+          else
+            echo "::error::Server failed to start within timeout"
+            kill $SERVER_PID 2>/dev/null || true
+            exit 1
+          fi
 
       - name: Run Playwright tests
         run: |
-          if [ "${{ github.event.inputs.browser }}" = "all" ] || [ -z "${{ github.event.inputs.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob --shard=${{ matrix.shard }}/4
-          elif [ "${{ github.event.inputs.browser }}" = "${{ matrix.browser }}" ]; then
-            npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob --shard=${{ matrix.shard }}/4
-          else
-            echo "Skipping ${{ matrix.browser }} as it doesn't match selected browser"
+          # Skip if browser doesn't match selection
+          if [ "${{ github.event.inputs.browser }}" != "all" ] && [ "${{ github.event.inputs.browser }}" != "" ] && [ "${{ github.event.inputs.browser }}" != "${{ matrix.browser }}" ]; then
+            echo "::notice::Skipping ${{ matrix.browser }} as it doesn't match selected browser (${{ github.event.inputs.browser }})"
             exit 0
           fi
+          
+          echo "::group::Running Playwright tests for ${{ matrix.browser }} (shard ${{ matrix.shard }}/4)"
+          npx playwright test --project=${{ matrix.project }} --config playwright.ci.config.ts --reporter=html,blob --shard=${{ matrix.shard }}/4
+          echo "::endgroup::"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:4200' }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
@@ -115,7 +122,10 @@ jobs:
         if: always()
         run: |
           if [ ! -z "$SERVER_PID" ]; then
+            echo "::notice::Stopping server (PID: $SERVER_PID)"
             kill $SERVER_PID || true
+            # Wait a moment for graceful shutdown
+            sleep 2
           fi
 
       - name: Upload individual HTML report
@@ -176,14 +186,31 @@ jobs:
           path: all-blob-reports
           merge-multiple: true
 
-      - name: Debug blob reports
+      - name: Verify blob reports
         run: |
-          echo "Checking all-blob-reports directory:"
-          find all-blob-reports -type f -name "*.zip" | head -10
-          ls -la all-blob-reports/
+          echo "::group::Blob reports verification"
+          if [ ! -d "all-blob-reports" ]; then
+            echo "::error::No blob reports directory found"
+            exit 1
+          fi
+          
+          blob_count=$(find all-blob-reports -type f -name "*.zip" | wc -l)
+          echo "Found $blob_count blob report files"
+          
+          if [ "$blob_count" -eq 0 ]; then
+            echo "::error::No blob report files found"
+            exit 1
+          fi
+          
+          echo "Blob report files:"
+          find all-blob-reports -type f -name "*.zip" | sort
+          echo "::endgroup::"
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./all-blob-reports
+        run: |
+          echo "::group::Merging reports"
+          npx playwright merge-reports --reporter html ./all-blob-reports
+          echo "::endgroup::"
 
       - name: Upload merged HTML report
         uses: actions/upload-artifact@v4
@@ -197,20 +224,32 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = \`## 🎭 Playwright Test Results
+            const fs = require('fs');
+            const path = require('path');
             
-            Test run completed for commit \${{ github.sha }}
+            // Check if merged report exists
+            const reportExists = fs.existsSync('playwright-report/index.html');
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
             
-            📊 **Individual Reports:**
-            - [Chromium Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }}) (Download html-report-chromium)
-            - [Firefox Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }}) (Download html-report-firefox)
+            const comment = `## 🎭 Playwright Test Results
             
-            📋 **Merged Report:**
-            - [Combined Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }}) (Download merged-html-report--attempt-\${{ github.run_attempt }})
+            **Test run completed for commit:** \`${{ github.sha }}\`
+            **Browser selection:** ${{ github.event.inputs.browser || 'all' }}
+            **Run attempt:** ${{ github.run_attempt }}
+            
+            ${reportExists ? '✅' : '❌'} **Merged Report:** ${reportExists ? 'Available' : 'Failed to generate'}
+            
+            ### 📊 Available Reports:
+            - 📋 [Merged HTML Report](${runUrl}) (Download: \`merged-html-report--attempt-${{ github.run_attempt }}\`)
+            - 🔍 [Individual Browser Reports](${runUrl}) (Download: \`html-report-*\`)
+            - 🎬 [Test Videos](${runUrl}) (Download: \`test-videos-*\` - only if tests failed)
+            - 📊 [Traces](${runUrl}) (Download: \`traces-*\`)
             
             **Browsers tested:** Chromium, Firefox
-            **Run attempt:** \${{ github.run_attempt }}
-            \`;
+            
+            ---
+            *View detailed results and download artifacts from the [Actions run](${runUrl})*
+            `;
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,
