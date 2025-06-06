@@ -8,8 +8,9 @@ test.describe("Navigation Tests", () => {
         await navigationPage.navigateTo(navPage.url);
         await test.step(`Verify ${navPage.name} page loaded`, async () => {
           const currentUrl = basePage.page.url();
-          // Extract the path part from navPage.url to avoid double slash issues
-          const expectedPath = navPage.url.replace(/^.*?\/\/.*?\//, "/");
+          // Get just the path part after the domain
+          const urlParts = navPage.url.split("/pages/");
+          const expectedPath = `/pages/${urlParts[1]}`;
           expect(currentUrl).toContain(expectedPath);
         });
       });
