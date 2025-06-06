@@ -1087,6 +1087,82 @@ export const env = {
 - Humidity levels
 - Energy consumption values
 - Weather data formats
+- Solar energy viewport sizes
+- Solar energy performance thresholds
+- Solar energy timeout configurations
+
+### 10.3 Test Data Structure
+
+Test data is organized in dedicated files in the `testData` folder:
+
+```typescript
+// Example of solar test data (solarData.ts)
+export const viewportSizes = [
+  { width: 320, height: 568, name: "Small Mobile" },
+  { width: 768, height: 1024, name: "Tablet" },
+  { width: 1200, height: 800, name: "Desktop" },
+];
+
+export const resizeViewportSizes = [
+  { width: 400, height: 600 },
+  { width: 800, height: 800 },
+  { width: 1200, height: 900 },
+  { width: 600, height: 700 },
+];
+
+export const defaultChartRenderTimeout = 1000;
+export const defaultResizeCompleteTimeout = 500;
+export const defaultViewportChangeTimeout = 100;
+export const defaultChartInitializationTimeout = 5000;
+export const maxLoadTime = 3000;
+```
+
+### 10.4 Using Test Data in Tests
+
+Test data is imported and used in tests to ensure consistency and maintainability:
+
+```typescript
+// Importing test data
+import { 
+  viewportSizes,
+  resizeViewportSizes,
+  defaultChartRenderTimeout,
+  maxLoadTime
+} from "../../testData/solarData";
+
+// Using test data in tests
+test("should adapt to different viewport sizes", async ({ IoTDashboardPage }) => {
+  for (const viewport of viewportSizes) {
+    await test.step(`Test solar component on ${viewport.name}`, async () => {
+      await IoTDashboardPage.setViewportSize(
+        viewport.width, 
+        viewport.height
+      );
+      // Test assertions...
+    });
+  }
+});
+
+test("should load solar data efficiently", async ({ IoTDashboardPage }) => {
+  await test.step("Measure solar component loading time", async () => {
+    const startTime = Date.now();
+    await expect(IoTDashboardPage.solarCard).toBeVisible();
+    await IoTDashboardPage.isSolarChartVisible();
+    const loadTime = Date.now() - startTime;
+
+    // Component should load within reasonable time
+    expect(loadTime).toBeLessThan(maxLoadTime);
+  });
+});
+```
+
+### 10.5 Benefits of Centralized Test Data
+
+1. **Consistency** - Same data values used across multiple tests
+2. **Maintainability** - Changes to test data only need to be made in one place
+3. **Clarity** - Improved test readability with named constants instead of magic numbers
+4. **Flexibility** - Easy to adjust test parameters for different environments
+5. **Documentation** - Test data files serve as documentation for expected values and formats
 
 ---
 
@@ -1142,6 +1218,67 @@ Tests are configured to run in CI/CD pipeline with:
 - Implement proper error handling
 - Maintain consistent coding standards
 - Regular code reviews for test code
+- Follow Page Object Model pattern:
+  - Keep all locators in page objects, not in test files
+  - Encapsulate page interactions in page object methods
+  - Tests should use page object methods, not direct element interactions
+- Centralize test data in dedicated files:
+  - Store constants, test values, and configuration in the testData folder
+  - Reference test data rather than hardcoding values in tests
+- Use explicit waits instead of fixed timeouts when possible
+
+### 11.4 Page Object Pattern Implementation
+
+The framework uses the Page Object Model (POM) pattern to organize tests:
+
+```typescript
+// Example of IoTDashboardPage object for Solar component
+export class IoTDashboardPage extends BasePage {
+  // Solar component elements - locators defined in the page object
+  readonly solarCard: Locator;
+  readonly solarChart: Locator;
+  readonly solarValue: Locator;
+  readonly solarHeader: Locator;
+  readonly solarDetails: Locator;
+  readonly solarInfoSection: Locator;
+  readonly solarChartCanvas: Locator;
+
+  // Constructor initializes all locators
+  constructor(page: Page) {
+    super(page);
+    // ...
+    // Solar component locators
+    this.solarCard = page.locator("ngx-solar nb-card");
+    this.solarChart = page.locator("ngx-solar .echart");
+    this.solarValue = page.locator("ngx-solar .value");
+    this.solarHeader = page.locator("text=Solar Energy Consumption");
+    this.solarDetails = page.locator("ngx-solar .details");
+    this.solarInfoSection = page.locator("ngx-solar .info");
+    this.solarChartCanvas = this.solarChart.locator("canvas");
+  }
+
+  // Methods to interact with page elements
+  async getSolarValue(): Promise<string> {
+    await this.solarValue.waitFor({ state: "visible" });
+    return (await this.solarValue.textContent()) || "";
+  }
+
+  async getSolarDetailsText(): Promise<string | null> {
+    await this.solarDetails.waitFor({ state: "visible" });
+    return await this.solarDetails.textContent();
+  }
+  
+  // More methods...
+}
+```
+
+**Benefits of Page Object Model:**
+
+1. **Separation of Concerns** - Test logic is separated from page structure
+2. **Reusability** - Page objects can be reused across multiple tests
+3. **Maintainability** - When UI changes, only page objects need to be updated
+4. **Readability** - Tests focus on business logic rather than implementation details
+5. **Reduced Duplication** - Common interactions are defined once
 
 ---
 
@@ -1316,8 +1453,6 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 | IOT-WE-008   | Weather responsive design     | ✅     | `WeatherTests.spec.ts` | Medium   | Automated - line 168-186 |
 | IOT-WE-009   | Weather zoom level testing    | ✅     | `WeatherTests.spec.ts` | Low      | Automated - line 188-207 |
 | IOT-WE-010   | Weather data validation       | ✅     | `WeatherTests.spec.ts` | High     | Automated - line 210-250 |
-| IOT-WE-011   | Weather data refresh          | ❌     | N/A                    | Medium   | Needs automation         |
-| IOT-WE-012   | Weather location change       | ❌     | N/A                    | Low      | Future enhancement       |
 
 #### 13.5.7 Electricity Component
 
@@ -1338,20 +1473,20 @@ The Test Traceability Matrix tracks which test cases are automated versus manual
 
 #### 13.5.8 Solar Energy Component
 
-| Test Case ID | Test Case Name              | Status | Spec File            | Priority | Notes                    |
-| ------------ | --------------------------- | ------ | -------------------- | -------- | ------------------------ |
-| IOT-S-001    | Solar component layout      | ✅     | `SolarTests.spec.ts` | High     | Automated - line 8-25    |
-| IOT-S-002    | Solar chart display         | ✅     | `SolarTests.spec.ts` | High     | Automated - line 27-47   |
-| IOT-S-003    | Solar consumption values    | ✅     | `SolarTests.spec.ts` | High     | Automated - line 49-71   |
-| IOT-S-004    | Solar chart styling         | ✅     | `SolarTests.spec.ts` | Medium   | Automated - line 75-96   |
-| IOT-S-005    | Solar chart data rendering  | ✅     | `SolarTests.spec.ts` | High     | Automated - line 98-115  |
-| IOT-S-006    | Solar chart gradient colors | ✅     | `SolarTests.spec.ts` | Low      | Automated - line 117-135 |
-| IOT-S-007    | Solar data validation       | ✅     | `SolarTests.spec.ts` | High     | Automated - line 138-178 |
-| IOT-S-008    | Solar responsive design     | ✅     | `SolarTests.spec.ts` | Medium   | Automated - line 181-207 |
-| IOT-S-009    | Solar chart proportions     | ✅     | `SolarTests.spec.ts` | Medium   | Automated - line 209-227 |
-| IOT-S-010    | Solar performance testing   | ✅     | `SolarTests.spec.ts` | Medium   | Automated - line 230-271 |
-| IOT-S-011    | Solar efficiency tracking   | ❌     | N/A                  | Medium   | Needs automation         |
-| IOT-S-012    | Solar vs grid comparison    | ❌     | N/A                  | Medium   | Needs automation         |
+| Test Case ID | Test Case Name              | Status | Spec File            | Priority | Notes                                              |
+| ------------ | --------------------------- | ------ | -------------------- | -------- | -------------------------------------------------- |
+| IOT-S-001    | Solar component layout      | ✅     | `SolarTests.spec.ts` | High     | Automated - lines 16-31, verifies card structure   |
+| IOT-S-002    | Solar chart display         | ✅     | `SolarTests.spec.ts` | High     | Automated - lines 33-47, tests chart visibility    |
+| IOT-S-003    | Solar consumption values    | ✅     | `SolarTests.spec.ts` | High     | Automated - lines 49-63, validates kWh format      |
+| IOT-S-004    | Solar chart styling         | ✅     | `SolarTests.spec.ts` | Medium   | Automated - lines 68-88, checks chart dimensions   |
+| IOT-S-005    | Solar chart data rendering  | ✅     | `SolarTests.spec.ts` | High     | Automated - lines 89-102, waits for initialization |
+| IOT-S-006    | Solar chart gradient colors | ✅     | `SolarTests.spec.ts` | Low      | Automated - lines 103-118, verifies canvas content |
+| IOT-S-007    | Solar data validation       | ✅     | `SolarTests.spec.ts` | High     | Automated - lines 123-165, validates value ranges  |
+| IOT-S-008    | Solar responsive design     | ✅     | `SolarTests.spec.ts` | Medium   | Automated - lines 168-186, tests multiple viewports|
+| IOT-S-009    | Solar chart proportions     | ✅     | `SolarTests.spec.ts` | Medium   | Automated - lines 188-201, verifies resize behavior|
+| IOT-S-010    | Solar performance testing   | ✅     | `SolarTests.spec.ts` | Medium   | Automated - lines 204-238, measures loading time   |
+| IOT-S-011    | Solar efficiency tracking   | ❌     | N/A                  | Medium   | Needs automation                                   |
+| IOT-S-012    | Solar vs grid comparison    | ❌     | N/A                  | Medium   | Needs automation                                   |
 
 #### 13.5.9 Traffic Component
 

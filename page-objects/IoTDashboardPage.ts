@@ -46,13 +46,14 @@ export class IoTDashboardPage extends BasePage {
   readonly musicPlayButton: Locator;
   readonly musicVolumeSlider: Locator;
   readonly playerControls: Locator;
-  readonly volumeControl: Locator;
-
-  // Solar component elements
+  readonly volumeControl: Locator; // Solar component elements
   readonly solarCard: Locator;
   readonly solarChart: Locator;
   readonly solarValue: Locator;
   readonly solarHeader: Locator;
+  readonly solarDetails: Locator;
+  readonly solarInfoSection: Locator;
+  readonly solarChartCanvas: Locator;
 
   // Weather component elements
   readonly weatherCard: Locator;
@@ -152,13 +153,14 @@ export class IoTDashboardPage extends BasePage {
     this.musicPlayButton = page.locator(".play-pause-button");
     this.musicVolumeSlider = page.locator(".volume-slider");
     this.playerControls = page.locator(".controls");
-    this.volumeControl = page.locator(".volume");
-
-    // Solar component locators
+    this.volumeControl = page.locator(".volume"); // Solar component locators
     this.solarCard = page.locator("ngx-solar nb-card");
     this.solarChart = page.locator("ngx-solar .echart");
     this.solarValue = page.locator("ngx-solar .value");
     this.solarHeader = page.locator("text=Solar Energy Consumption");
+    this.solarDetails = page.locator("ngx-solar .details");
+    this.solarInfoSection = page.locator("ngx-solar .info");
+    this.solarChartCanvas = this.solarChart.locator("canvas");
 
     // Weather component locators
     this.weatherCard = page.locator("ngx-weather nb-card");
@@ -314,9 +316,53 @@ export class IoTDashboardPage extends BasePage {
     await this.solarValue.waitFor({ state: "visible" });
     return (await this.solarValue.textContent()) || "";
   }
-
   async isSolarChartVisible(): Promise<boolean> {
     return await this.solarChart.isVisible();
+  }
+  async getSolarDetailsText(): Promise<string | null> {
+    await this.solarDetails.waitFor({ state: "visible" });
+    return await this.solarDetails.textContent();
+  }
+
+  async getSolarInfoSection(): Promise<Locator> {
+    await this.solarInfoSection.waitFor({ state: "visible" });
+    return this.solarInfoSection;
+  }
+
+  async getSolarValueElement(): Promise<Locator> {
+    const infoSection = await this.getSolarInfoSection();
+    return infoSection.locator(".value");
+  }
+
+  async getSolarDetailsElement(): Promise<Locator> {
+    const infoSection = await this.getSolarInfoSection();
+    return infoSection.locator(".details");
+  }
+
+  async getSolarChartCanvas(): Promise<Locator> {
+    await this.solarChartCanvas.waitFor({ state: "visible" });
+    return this.solarChartCanvas;
+  }
+
+  async waitForChartToRender(timeout = 1000): Promise<void> {
+    await this.page.waitForTimeout(timeout);
+  }
+
+  async waitForSolarChartInitialization(timeout = 5000): Promise<void> {
+    await this.page.waitForFunction(
+      () => {
+        const chartElement = document.querySelector("ngx-solar .echart");
+        return chartElement && chartElement.children.length > 0;
+      },
+      { timeout },
+    );
+  }
+
+  async setViewportSize(width: number, height: number, waitTime = 0): Promise<void> {
+    await this.page.setViewportSize({ width, height });
+    if (waitTime > 0) {
+      await this.page.waitForTimeout(waitTime);
+    }
   }
 
   // Weather component methods
