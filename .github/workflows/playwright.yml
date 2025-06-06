@@ -67,14 +67,6 @@ jobs:
             echo "::warning::TEST_USER_PASSWORD secret is not set"
           fi
 
-      - name: Start web server
-        run: |
-          npm run start:ci &
-          SERVER_PID=$!
-          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
-          npx wait-on http://localhost:4200 --timeout 120000 --interval 1000
-          echo "::notice::Server started successfully on http://localhost:4200"
-
       - name: Run Playwright tests
         run: |
           if [ "${{ github.event.inputs.browser }}" = "all" ] || [ -z "${{ github.event.inputs.browser }}" ]; then
@@ -83,7 +75,7 @@ jobs:
             npx playwright test --project=${{ github.event.inputs.browser }} --config playwright.ci.config.ts --reporter=html,blob
           fi
         env:
-          BASE_URL: ${{ secrets.BASE_URL || 'http://localhost:4200' }}
+          BASE_URL: ${{ secrets.BASE_URL }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
           TEST_DELETE_EMAIL: ${{ secrets.TEST_DELETE_EMAIL }}
@@ -91,13 +83,6 @@ jobs:
           TEST_AGE_FILTERS: ${{ secrets.TEST_AGE_FILTERS }}
           CI: true
           NODE_ENV: test
-
-      - name: Stop web server
-        if: always()
-        run: |
-          if [ ! -z "$SERVER_PID" ]; then
-            kill $SERVER_PID || true
-          fi
 
       - name: Upload HTML report
         if: always()
@@ -136,16 +121,16 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = \`## 🎭 Playwright Test Results
+            const comment = `##  Playwright Test Results
             
-            Test run completed for commit \${{ github.sha }}
+            Test run completed for commit ${{ github.sha }}
             
-            📊 **Test Report:**
-            - [HTML Report](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }}) (Download html-report)
+             **Test Report:**
+            - [HTML Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) (Download html-report)
             
             **Browsers tested:** Chromium, Firefox
-            **Run attempt:** \${{ github.run_attempt }}
-            \`;
+            **Run attempt:** ${{ github.run_attempt }}
+            `;
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,
