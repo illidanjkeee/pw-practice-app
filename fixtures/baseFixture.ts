@@ -1,9 +1,9 @@
 import { test as base } from "@playwright/test";
-import { IoTDashboardPage } from "../page-objects/IoTDashboardPage";
 import { BasePage } from "../page-objects/basePage";
 import { DatepickerPage } from "../page-objects/datepickerPage";
 import { DialogPage } from "../page-objects/dialogPage";
 import { FormLayoutsPage } from "../page-objects/formLayoutsPage";
+import { IoTDashboardPage } from "../page-objects/IoTDashboardPage";
 import { NavigationPage } from "../page-objects/navigationPage";
 import { SmartTablePage } from "../page-objects/smartTablePage";
 import { WindowPage } from "../page-objects/windowPage";

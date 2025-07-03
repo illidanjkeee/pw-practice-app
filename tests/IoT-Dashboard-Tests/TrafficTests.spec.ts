@@ -91,7 +91,6 @@ test.describe("IoT Dashboard - Traffic Component Tests", () => {
       await test.step("Select different traffic type", async () => {
         const options = IoTDashboardPage.page.locator("nb-option");
         const firstOption = options.first();
-        const firstOptionText = await firstOption.textContent();
 
         await firstOption.click();
 
