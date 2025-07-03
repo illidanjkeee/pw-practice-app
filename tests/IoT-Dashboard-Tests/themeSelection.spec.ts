@@ -73,7 +73,7 @@ test.describe("Theme Selection Tests", () => {
 
     await test.step("Refresh the page", async () => {
       await page.reload({ timeout: 15000 });
-      await page.waitForLoadState("networkidle", { timeout: 15000 });
+      await page.waitForLoadState("domcontentloaded", { timeout: 15000 });
     });
 
     await test.step("Verify theme persistence", async () => {
