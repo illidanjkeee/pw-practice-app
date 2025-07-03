@@ -1,11 +1,8 @@
-// Update the import path if the file exists elsewhere, for example:
 import { expect, test } from "../../fixtures/baseFixture";
 import { testForms } from "../../testData/navigationData";
-// Or, if the file does not exist, create 'baseFixture.ts' in the correct directory with the necessary exports.
 import { env } from "../../utils/environment";
 
 test.describe("Forms, Form Layouts Page Tests", () => {
-  // Common setup for all tests
   test.beforeEach(async ({ basePage, navigationPage }) => {
     await basePage.navigateToHome();
     await navigationPage.formLayoutsPage();
@@ -41,14 +38,12 @@ test.describe("Forms, Form Layouts Page Tests", () => {
     });
   });
 
-  // Form submission tests from usePageObjects.spec.ts
   test("should submit grid form with credentials", async ({ formLayoutsPage }) => {
     await test.step("Submit grid form with credentials", async () => {
       await formLayoutsPage.submitUsingTheGridFormWithCredentialsAndSelectOption(testForms[0]);
     });
 
     await test.step("Verify form submission", async () => {
-      // check if success message is shown or form is cleared
       const formElement = await formLayoutsPage.getGridFormElement();
       await expect(formElement).toBeVisible();
     });

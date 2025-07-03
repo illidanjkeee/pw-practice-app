@@ -19,7 +19,6 @@ test.describe("Kitten Integration Tests", () => {
 
   test("Verify the Kitten card has the correct description", async ({ IoTDashboardPage }) => {
     await test.step("Verify the Kitten card has the correct description", async () => {
-      // TODO: finish the test
       await expect(IoTDashboardPage.kittenDescription).toHaveText(
         "UI Kitten is a framework that contains a set of commonly used UI components styled in a similar way. The most awesome thing: you can change themes on the fly by just passing a different set of variables. 100% native. Give our kitten a try!",
       );
