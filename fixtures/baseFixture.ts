@@ -3,6 +3,7 @@ import { BasePage } from "../page-objects/basePage";
 import { DatepickerPage } from "../page-objects/datepickerPage";
 import { DialogPage } from "../page-objects/dialogPage";
 import { FormLayoutsPage } from "../page-objects/formLayoutsPage";
+import { HeaderPage } from "../page-objects/headerPage";
 import { IoTDashboardPage } from "../page-objects/IoTDashboardPage";
 import { NavigationPage } from "../page-objects/navigationPage";
 import { SmartTablePage } from "../page-objects/smartTablePage";
@@ -12,6 +13,7 @@ import { WindowPage } from "../page-objects/windowPage";
 export type MainFixtures = {
   basePage: BasePage;
   navigationPage: NavigationPage;
+  headerPage: HeaderPage;
   formLayoutsPage: FormLayoutsPage;
   datepickerPage: DatepickerPage;
   dialogPage: DialogPage;
@@ -52,6 +54,9 @@ export const test = base.extend<MainFixtures>({
 
   IoTDashboardPage: async ({ page }, use) => {
     await use(new IoTDashboardPage(page));
+  },
+  headerPage: async ({ page }, use) => {
+    await use(new HeaderPage(page));
   },
 });
 
