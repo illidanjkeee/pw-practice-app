@@ -55,6 +55,7 @@ export const test = base.extend<MainFixtures>({
   IoTDashboardPage: async ({ page }, use) => {
     await use(new IoTDashboardPage(page));
   },
+
   headerPage: async ({ page }, use) => {
     await use(new HeaderPage(page));
   },
